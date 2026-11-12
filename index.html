@@ -1228,6 +1228,16 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
   box-shadow:inset 0 0 95px rgba(255,20,10,.6);animation:bCritPulse 1.4s ease-in-out infinite}
 @keyframes bCritPulse{0%,100%{opacity:.28}50%{opacity:.95}}
 
+/* —— 站点脚注：持续优化 + GitHub —— */
+.siteFoot{margin-top:26px;padding:16px 14px 12px;text-align:center;
+  border-top:1px dashed rgba(160,120,200,.35);background:rgba(255,255,255,.5);
+  border-radius:14px}
+.siteFoot .sfLive{font-size:13px;color:#7A6E9E;font-weight:700;margin-bottom:6px}
+.siteFoot .sfGh{font-size:12.5px;color:#8B84A0;margin:0}
+.sfGhLink{color:#7C5CBF;font-weight:700;text-decoration:underline;
+  text-underline-offset:3px;cursor:pointer}
+.sfGhLink:hover{color:#9B7FE0}
+
 /* ===== 第 1 关 · 生化来袭（真实游戏图 + 枪 + 掉血）===== */
 .prompt.zMode{background:#0d1218;padding:0;height:352px;box-shadow:0 10px 30px rgba(10,20,30,.32);border:2px solid #2a3644}
 .prompt.zMode .magicCircle,.prompt.zMode .target,.prompt.zMode .hands,
@@ -3015,7 +3025,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 <body>
 <div id="verTag" style="position:fixed;right:8px;bottom:6px;z-index:200;pointer-events:none;
   font-size:11px;font-weight:700;color:#A896B4;background:rgba(255,255,255,.72);
-  padding:2px 8px;border-radius:8px">v11-12 15:20</div>
+  padding:2px 8px;border-radius:8px">v11-12 15:30</div>
 <div class="aurora"><i></i><i></i><i></i></div>
 <!-- 叶罗丽风：飘落的花瓣 + 闪光魔法尘 -->
 <div class="petals" id="petals"></div>
@@ -3074,6 +3084,14 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
       <button class="btn ghost" id="btnAlbum">🏅 我的贴纸</button>
       <button class="btn ghost" id="btnParent">👨‍👩‍👧 家长看板</button>
       <button class="btn ghost sm" id="btnReset">🗑️ 清空进度</button>
+    </div>
+
+    <!-- 站点脚注：持续优化说明 + GitHub 项目入口 -->
+    <div class="siteFoot" id="siteFoot">
+      <p class="sfLive">🌱 本网站持续优化中，玩法和特效会不断更新，欢迎常回来玩！</p>
+      <p class="sfGh">⌨ 开源项目：
+        <a id="ghLink" class="sfGhLink" href="#" onclick="return false">GitHub 整理中，即将开放</a>
+      </p>
     </div>
   </section>
 
