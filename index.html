@@ -577,195 +577,569 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
   animation:fairyFloat 3.4s ease-in-out infinite;
 }
 
-/* ===== 第 7 关 · 传奇战士砍 BOSS ===== */
-.prompt.lMode{background:#0a0806;position:relative;overflow:hidden;min-height:330px;
-  border:2px solid #3a2c1c;padding:0}
+/* ===== 云服务账号 / 进度同步 ===== */
+.accTabs{display:flex;gap:8px;justify-content:center;margin:12px 0 10px}
+.accTabs button{flex:1;padding:9px 0;border-radius:11px;border:2px solid #E6D8B8;
+  background:#FFF9EC;color:#7A6440;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit}
+.accTabs button.on{background:#FFD86E;border-color:#E8B33A;color:#5A3E0E}
+.accRow{display:flex;gap:8px;margin:9px 0}
+.accRow input{flex:1;min-width:0;padding:11px 13px;border-radius:11px;border:2px solid #E6D8B8;
+  font-size:15px;outline:none;font-family:inherit;background:#fff}
+.accRow input:focus{border-color:#F2B93A}
+.accRow button{padding:11px 14px;border-radius:11px;border:none;background:#5FBF77;color:#fff;
+  font-weight:800;font-size:14px;cursor:pointer;white-space:nowrap;font-family:inherit}
+.accRow button:disabled{opacity:.45;cursor:default}
+.accMsg{min-height:19px;font-size:13px;color:#C0563A;margin-top:6px;line-height:1.6}
+.accMsg.ok{color:#2E9E5B}
+.accTip{font-size:12px;color:#8A7A5E;line-height:1.8;margin:8px 0 0;text-align:left;
+  background:#FBF3E0;border-radius:10px;padding:9px 12px}
+.accWho{font-size:15px;font-weight:800;color:#5A3E0E;margin:6px 0 2px}
+.accTag{display:inline-block;font-size:11px;font-weight:800;color:#2E9E5B;background:#E8F7EC;
+  border-radius:999px;padding:2px 9px;margin-left:6px;vertical-align:2px}
+
+/* ===== 第 7 关 · 传奇沙巴克（战士 vs 祖玛教主，真实战斗）=====
+   真的有两个角色在打：左边圣战套战士、右边祖玛教主立绘。
+   敲对一个键 = 出刀（挥砍 + 刀光 + 命中掉血 + 飘伤害）。
+   连击 5 → 半月弯刀（大弧光横扫，伤害翻倍）
+   连击 10 → 烈火剑法（刀身起火，火柱轰在教主身上）
+   教主每 5.5 秒蓄力扑击一次，扣战士生命。 */
+.prompt.lMode{background:#0a0806;position:relative;overflow:hidden;height:368px;
+  border:2px solid #3a2c1c;padding:0;border-radius:18px}
 .prompt.lMode .magicCircle,.prompt.lMode .target,.prompt.lMode .hands,
 .prompt.lMode .pyhint,.prompt.lMode .pyScene{display:none !important}
-.prompt.lMode .hint{position:absolute;left:0;right:0;bottom:8px;margin:0;z-index:9;
-  color:#E8D9B8;font-size:13px;text-shadow:0 2px 6px #000}
-#lLayer{position:absolute;inset:0;overflow:hidden;border-radius:14px;display:none}
-#lLayer .lBg{position:absolute;inset:-14px;background:url('assets/legend_bg.jpg') center/cover no-repeat;
-  filter:saturate(1.05) brightness(.62) contrast(1.05)}
-#lLayer::after{content:'';position:absolute;inset:0;pointer-events:none;
-  background:radial-gradient(ellipse at 62% 46%,transparent 26%,rgba(4,3,2,.82) 100%),
-             linear-gradient(180deg,rgba(10,6,4,.55),transparent 34%,rgba(8,5,3,.7))}
-/* 战士：左下角（真实传奇战士截图，边缘羽化融进画面） */
-#lHero{position:absolute;left:-10px;bottom:-18px;height:214px;width:auto;z-index:4;
-  -webkit-mask-image:radial-gradient(ellipse 78% 88% at 52% 52%,#000 62%,transparent 100%);
-  mask-image:radial-gradient(ellipse 78% 88% at 52% 52%,#000 62%,transparent 100%);
-  filter:drop-shadow(0 6px 14px rgba(0,0,0,.8));
-  animation:lHeroIdle 2.6s ease-in-out infinite}
+.prompt.lMode .hint{position:absolute;left:0;right:0;bottom:5px;z-index:9;margin:0;
+  color:#E8D9B8;font-size:12px;text-align:center;text-shadow:0 2px 6px #000}
+.prompt.lMode .hint b{color:#FFD24A}
+
+#lStage{position:absolute;inset:0;overflow:hidden;border-radius:16px;display:none;background:#0a0705}
+#lStage .lBg{position:absolute;inset:-16px;background:url('assets/legend_bg.jpg') center/cover no-repeat;
+  filter:saturate(.9) brightness(.36) contrast(1.14) blur(3.5px);transform:scale(1.1)}
+#lStage .lDark{position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:radial-gradient(ellipse 62% 70% at 52% 52%,transparent 20%,rgba(6,4,2,.86) 100%),
+             linear-gradient(180deg,rgba(10,6,3,.72),transparent 30%,rgba(8,5,3,.86))}
+
+/* —— 战士 —— */
+.lHeroWrap{position:absolute;left:4px;bottom:62px;height:250px;z-index:5;
+  transform-origin:70% 92%;animation:lHeroIdle 2.4s ease-in-out infinite}
+#lHero{height:100%;width:auto;display:block;
+  filter:drop-shadow(0 8px 16px rgba(0,0,0,.95)) drop-shadow(0 0 10px rgba(255,180,60,.22))}
 @keyframes lHeroIdle{0%,100%{transform:translateY(0) rotate(-1deg)}
-  50%{transform:translateY(-5px) rotate(1.2deg)}}
-#lHero.swing{animation:lSwing .32s ease-out}
-@keyframes lSwing{0%{transform:translateX(0) rotate(0)}
-  35%{transform:translateX(26px) rotate(-8deg) scale(1.04)}
+  50%{transform:translateY(-4px) rotate(1deg)}}
+.lHeroWrap.atk{animation:lHeroAtk .28s ease-out}
+@keyframes lHeroAtk{0%{transform:translateX(0) rotate(0)}
+  30%{transform:translateX(26px) rotate(-9deg) scale(1.05)}
+  60%{transform:translateX(16px) rotate(4deg)}
   100%{transform:translateX(0) rotate(0)}}
-/* BOSS 血条 */
-.lBossTop{position:absolute;left:50%;top:10px;transform:translateX(-50%);z-index:7;width:66%;text-align:center}
-.lBossName{color:#FFD8A0;font-size:12px;font-weight:900;letter-spacing:3px;
-  text-shadow:0 2px 6px #000,0 0 10px rgba(255,140,40,.6);margin-bottom:4px}
-.lBossBar{height:14px;border:2px solid rgba(255,214,150,.85);border-radius:4px;
-  background:rgba(20,10,4,.88);overflow:hidden;box-shadow:0 0 14px rgba(255,120,20,.35)}
-.lBossBar i{display:block;height:100%;width:100%;
-  background:linear-gradient(90deg,#8B1A0A,#D8380F 45%,#FF7A1E);transition:width .26s ease}
-/* 玩家血条（左下小条） */
-.lPvWrap{position:absolute;left:12px;top:12px;z-index:7;width:132px}
-.lPvName{color:#E8D9B8;font-size:10px;font-weight:800;margin-bottom:3px;text-shadow:0 2px 5px #000}
-.lPvBar{height:9px;border:2px solid rgba(255,255,255,.55);border-radius:999px;
-  background:rgba(10,8,6,.85);overflow:hidden}
-.lPvBar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#62D0FF,#2D7BFF);
-  transition:width .25s}
-.lPvWrap.low .lPvBar i{background:linear-gradient(90deg,#FF9A3D,#FF3D3D)}
-/* 字母牌（当前要打的键） */
-.lKey{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);z-index:8;
-  width:62px;height:62px;border-radius:8px;display:flex;align-items:center;justify-content:center;
-  font:900 38px/1 Consolas,monospace;color:#FFF6D8;
-  background:linear-gradient(160deg,rgba(120,20,10,.95),rgba(60,8,4,.95));
+.lHeroWrap.hurt{animation:lHeroHurt .3s ease}
+@keyframes lHeroHurt{0%,100%{transform:translateX(0);filter:none}
+  30%{transform:translateX(-10px);filter:brightness(2) sepia(.6) hue-rotate(-30deg)}}
+/* 战士脚下的阴影 */
+.lHeroWrap::after{content:'';position:absolute;left:10%;right:10%;bottom:-6px;height:14px;
+  border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,.7),rgba(0,0,0,0) 72%)}
+
+/* —— 教主 —— */
+.lBossWrap{position:absolute;right:6%;bottom:84px;height:250px;z-index:4;
+  transform-origin:50% 90%;animation:lBossIdle 2.8s ease-in-out infinite}
+#lBoss{height:100%;width:auto;display:block;
+  filter:drop-shadow(0 10px 18px rgba(0,0,0,.9)) drop-shadow(0 0 14px rgba(255,70,20,.28))}
+@keyframes lBossIdle{0%,100%{transform:translate(0,0) scale(1)}
+  35%{transform:translate(-4px,-5px) scale(1.014)}
+  70%{transform:translate(4px,-1px) scale(1.006)}}
+.lBossWrap.hit{animation:lBossHit .24s ease-out}
+@keyframes lBossHit{0%{transform:translateX(14px) rotate(3deg);filter:brightness(2.4) saturate(.4)}
+  100%{transform:translateX(0) rotate(0)}}
+.lBossWrap.lunge{animation:lBossLunge .52s ease-out}
+@keyframes lBossLunge{0%{transform:scale(1) translate(0,0)}
+  28%{transform:scale(1.2) translate(-34px,18px);filter:brightness(1.4)}
+  100%{transform:scale(1) translate(0,0)}}
+.lBossWrap.dead{animation:lBossDead 1.1s ease-in forwards}
+@keyframes lBossDead{0%{filter:brightness(1)}
+  14%{filter:brightness(3) saturate(.2);transform:translateX(-14px)}
+  34%{filter:brightness(.3);transform:translateX(16px) rotate(8deg)}
+  100%{filter:brightness(.05);transform:translateY(50px) rotate(26deg) scale(.76);opacity:0}}
+.lBossAura{position:absolute;left:50%;top:54%;width:150%;height:132%;transform:translate(-50%,-50%);
+  border-radius:50%;pointer-events:none;opacity:0;z-index:-1;
+  background:radial-gradient(circle,rgba(255,70,20,.62),rgba(255,40,10,0) 66%)}
+.lBossAura.charging{animation:lAuraCharge .74s ease-in-out}
+@keyframes lAuraCharge{0%{opacity:0;transform:translate(-50%,-50%) scale(.7)}
+  58%{opacity:1;transform:translate(-50%,-50%) scale(1.06)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1.3)}}
+
+/* —— 字母牌 —— */
+.lKey{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);z-index:8;
+  width:60px;height:60px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+  font:900 36px/1 Consolas,monospace;color:#FFF6D8;
+  background:linear-gradient(160deg,rgba(120,20,10,.95),rgba(52,8,4,.96));
   border:3px solid #E8C070;box-shadow:0 0 26px rgba(255,140,30,.7),inset 0 0 14px rgba(255,180,60,.4);
-  text-shadow:0 0 10px rgba(255,200,80,.9);
-  animation:lKeyPulse 1.05s ease-in-out infinite}
+  text-shadow:0 0 10px rgba(255,200,80,.9);animation:lKeyPulse 1.05s ease-in-out infinite}
 @keyframes lKeyPulse{0%,100%{transform:translate(-50%,-50%) scale(1)}
   50%{transform:translate(-50%,-50%) scale(1.07)}}
-/* 半月弯刀：横向弧光 */
-.lCrescent{position:absolute;left:6%;top:38%;width:200px;height:200px;z-index:6;
-  opacity:0;pointer-events:none;border-radius:50%;
-  border:7px solid rgba(200,235,255,0);
-  border-right-color:#DFF4FF;border-top-color:#9FE0FF;
-  filter:drop-shadow(0 0 14px #7BD8FF)}
-.lCrescent.on{animation:lCrescentFx .42s ease-out}
-@keyframes lCrescentFx{0%{opacity:0;transform:scale(.5) rotate(-30deg)}
-  30%{opacity:1;transform:scale(1.05) rotate(10deg)}100%{opacity:0;transform:scale(1.5) rotate(40deg)}}
-/* 烈火剑法：火焰爆发 */
-.lFire{position:absolute;left:22%;top:30%;width:210px;height:210px;z-index:6;opacity:0;
+
+/* —— 刀光 —— */
+.lSlash{position:absolute;right:24%;top:34%;width:150px;height:150px;z-index:7;opacity:0;
+  border-radius:50%;border:9px solid transparent;border-top-color:#FFF8E0;border-right-color:#FFF0B8;
+  filter:drop-shadow(0 0 12px #FFD98A);transform:rotate(-46deg);pointer-events:none}
+.lSlash.on{animation:lSlashFx .3s ease-out}
+@keyframes lSlashFx{0%{opacity:0;transform:rotate(-70deg) scale(.55)}
+  28%{opacity:1;transform:rotate(-24deg) scale(1.06)}
+  100%{opacity:0;transform:rotate(24deg) scale(1.28)}}
+/* 半月弯刀：更大更蓝的大弧 */
+.lCrescent{position:absolute;right:10%;top:22%;width:250px;height:250px;z-index:8;opacity:0;
+  border-radius:50%;border:12px solid transparent;border-top-color:#DFF4FF;border-right-color:#8FD8FF;
+  filter:drop-shadow(0 0 20px #6FD0FF);pointer-events:none}
+.lCrescent.on{animation:lCrescentFx .5s ease-out}
+@keyframes lCrescentFx{0%{opacity:0;transform:rotate(-80deg) scale(.4)}
+  26%{opacity:1;transform:rotate(-10deg) scale(1.05)}
+  100%{opacity:0;transform:rotate(60deg) scale(1.45)}}
+/* 烈火剑法：火柱 + 火星 */
+.lFire{position:absolute;right:16%;bottom:16%;width:220px;height:230px;z-index:7;opacity:0;
+  border-radius:50% 50% 40% 40%;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 78%,#FFF8C8 0%,#FFC24A 22%,#FF6A1E 44%,rgba(180,20,0,0) 72%)}
+.lFire.on{animation:lFireFx .62s ease-out}
+@keyframes lFireFx{0%{opacity:0;transform:scale(.25) scaleY(.6)}
+  22%{opacity:1;transform:scale(1.06) scaleY(1.2)}
+  100%{opacity:0;transform:scale(1.55) scaleY(1.5)}}
+/* 向上窜的火舌 */
+.lFire::before,.lFire::after{content:'';position:absolute;border-radius:52% 48% 40% 40%;
+  background:radial-gradient(ellipse at 50% 82%,#FFF6C0,#FFB03A 40%,rgba(200,40,0,0) 74%);
+  filter:blur(7px);opacity:0;pointer-events:none}
+.lFire::before{left:22%;right:22%;top:12%;bottom:18%}
+.lFire::after{left:34%;right:34%;top:0;bottom:30%}
+.lFire.on::before{animation:lTongue .56s ease-out}
+.lFire.on::after{animation:lTongue .64s ease-out .05s}
+@keyframes lTongue{0%{opacity:0;transform:scale(.35) translateY(24px) scaleY(.7)}
+  28%{opacity:.95;transform:scale(.95) translateY(-6px) scaleY(1.15)}
+  100%{opacity:0;transform:scale(1.2) translateY(-74px) scaleY(1.3)}}
+/* 教主抓击：三道血爪扫过战士 */
+.lClaw{position:absolute;left:6%;top:24%;width:160px;height:150px;z-index:8;opacity:0;pointer-events:none}
+.lClaw i{position:absolute;left:0;width:100%;height:8px;border-radius:50%;
+  background:linear-gradient(90deg,rgba(255,60,25,0),#FF3B1F 22%,#FFE0CC 50%,#FF3B1F 78%,rgba(255,60,25,0));
+  filter:drop-shadow(0 0 9px rgba(255,60,25,.95));transform-origin:0 50%}
+.lClaw i:nth-child(1){top:26%;transform:rotate(26deg)}
+.lClaw i:nth-child(2){top:46%;transform:rotate(22deg)}
+.lClaw i:nth-child(3){top:66%;transform:rotate(18deg)}
+.lClaw.on{animation:lClawFx .42s ease-out}
+@keyframes lClawFx{0%{opacity:0;transform:scale(.6) rotate(-10deg)}
+  20%{opacity:1;transform:scale(1) rotate(0)}
+  100%{opacity:0;transform:scale(1.25) rotate(6deg)}}
+/* 命中火花 */
+.lSpark{position:absolute;width:120px;height:120px;margin:-60px 0 0 -60px;z-index:8;opacity:0;
   border-radius:50%;pointer-events:none;
-  background:radial-gradient(circle,#FFF6C0 0%,#FFC24A 22%,#FF6A1E 46%,rgba(190,30,0,0) 74%)}
-.lFire.on{animation:lFireFx .55s ease-out}
-@keyframes lFireFx{0%{opacity:0;transform:scale(.3)}25%{opacity:1;transform:scale(1.1)}
-  100%{opacity:0;transform:scale(1.75)}}
-/* 伤害数字（传奇风金字） */
-.lDmg{position:absolute;z-index:9;font:900 24px/1 Consolas,monospace;color:#FFE070;
+  background:radial-gradient(circle,#FFF 0%,#FFD36E 18%,#FF5A1E 44%,rgba(160,20,0,0) 70%)}
+.lSpark.on{animation:lSparkFx .3s ease-out}
+@keyframes lSparkFx{0%{opacity:1;transform:scale(.2)}100%{opacity:0;transform:scale(1.4)}}
+
+/* —— HUD —— */
+.lBossTop{position:absolute;left:50%;top:8px;transform:translateX(-50%);z-index:10;width:64%}
+.lBossName{display:flex;justify-content:space-between;align-items:center;font-size:12px;
+  font-weight:900;letter-spacing:3px;color:#FFD8A0;text-shadow:0 2px 6px #000,0 0 12px rgba(255,120,20,.7);
+  margin-bottom:5px}
+.lBossName b{color:#FFE45C;font-family:Consolas,monospace;letter-spacing:1px}
+.lBossBar{height:15px;border:2px solid rgba(255,214,150,.9);border-radius:4px;
+  background:rgba(20,10,4,.92);overflow:hidden;
+  box-shadow:0 0 16px rgba(255,70,20,.5),inset 0 0 10px rgba(0,0,0,.9)}
+.lBossBar i{display:block;height:100%;width:100%;
+  background:linear-gradient(90deg,#7A1006,#D8380F 42%,#FF7A1E 76%,#FFD24A);
+  transition:width .18s ease;box-shadow:0 0 10px rgba(255,120,40,.9)}
+.lPvWrap{position:absolute;left:14px;top:12px;z-index:10;width:154px}
+.lPvRow{font-size:10px;font-weight:800;color:#E8D9B8;letter-spacing:1px;margin-bottom:2px;
+  display:flex;justify-content:space-between;text-shadow:0 2px 5px #000}
+.lPvRow b{font-family:Consolas,monospace;color:#FFD8A0}
+.lPvBar{height:10px;border:2px solid rgba(255,255,255,.6);border-radius:3px;
+  background:rgba(10,8,6,.9);overflow:hidden;margin-bottom:4px}
+.lPvBar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#FF3D3D,#B81A0A);
+  transition:width .2s}
+.lMpBar i{background:linear-gradient(90deg,#4FA8FF,#1E56B8)}
+.lPvWrap.low .lPvBar i{animation:lLowPulse .7s ease-in-out infinite}
+@keyframes lLowPulse{0%,100%{opacity:1}50%{opacity:.4}}
+/* 技能条 */
+.lSkills{position:absolute;right:14px;bottom:10px;z-index:10;display:flex;gap:6px}
+.lSk{width:44px;height:44px;border-radius:8px;border:2px solid rgba(255,214,150,.55);
+  background:rgba(14,10,6,.9);display:flex;flex-direction:column;align-items:center;
+  justify-content:center;color:#9A8564;font-size:8px;line-height:1.1;text-align:center;
+  box-shadow:inset 0 0 10px rgba(0,0,0,.8);transition:.2s}
+.lSk em{font-style:normal;font-size:17px;line-height:1;margin-bottom:2px}
+.lSk.ready{border-color:#FFD24A;color:#FFE9A8;box-shadow:0 0 14px rgba(255,170,50,.7),inset 0 0 10px rgba(255,140,30,.3)}
+.lSk.fire.ready{border-color:#FF6A1E;color:#FFC08A;box-shadow:0 0 16px rgba(255,90,20,.85)}
+/* 横幅 / 伤害 / 受伤 */
+.lBanner{position:absolute;left:50%;top:30%;transform:translate(-50%,-50%);z-index:12;
+  font:900 26px/1 "Microsoft YaHei",sans-serif;color:#FFE070;letter-spacing:6px;opacity:0;
+  text-shadow:0 3px 0 #6B1E00,0 0 20px #FF8A1E;pointer-events:none;white-space:nowrap}
+.lBanner.on{animation:lBannerFx .9s ease-out}
+@keyframes lBannerFx{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}
+  20%{opacity:1;transform:translate(-50%,-50%) scale(1.12)}
+  74%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
+.lDmg{position:absolute;z-index:11;font:900 22px/1 Consolas,monospace;color:#FFE070;
   text-shadow:0 2px 0 #7A2A00,0 0 10px rgba(255,140,0,.95);pointer-events:none;
   animation:lDmgFly .8s ease-out forwards}
+.lDmg.crit{font-size:30px;color:#FFF1A8}
 @keyframes lDmgFly{0%{opacity:0;transform:translateY(0) scale(.6)}
-  18%{opacity:1;transform:translateY(-12px) scale(1.2)}
-  100%{opacity:0;transform:translateY(-62px) scale(1)}}
-/* 技能飘字 */
-.lSkill{position:absolute;left:50%;top:26%;transform:translateX(-50%);z-index:10;
-  font:900 22px/1 "Microsoft YaHei",sans-serif;color:#FFE070;letter-spacing:3px;
-  text-shadow:0 3px 0 #6B1E00,0 0 16px #FF8A1E;opacity:0;pointer-events:none;white-space:nowrap}
-.lSkill.on{animation:lSkillFx .9s ease-out}
-@keyframes lSkillFx{0%{opacity:0;transform:translateX(-50%) scale(.6)}
-  22%{opacity:1;transform:translateX(-50%) scale(1.1)}
-  100%{opacity:0;transform:translateX(-50%) translateY(-18px) scale(1)}}
-#lLayer.hurt{animation:lHurt .42s ease}
-@keyframes lHurt{0%,100%{box-shadow:none}
-  25%{box-shadow:inset 0 0 110px rgba(255,20,10,.75)}60%{box-shadow:inset 0 0 60px rgba(255,20,10,.4)}}
-/* ===== 第 5 关 · 卡丁车冲刺 ===== */
-.prompt.kMode{background:#0b1220;position:relative;overflow:hidden;min-height:300px;
-  border:2px solid #24405e;padding-bottom:74px}
-.prompt.kMode .pyhint{margin-bottom:2px}
-.prompt.kMode .pyhint,.prompt.kMode .target{position:relative;z-index:6;color:#EAF6FF}
-.prompt.kMode .pyhint i{color:#7BE1FF}
-.prompt.kMode .magicCircle,.prompt.kMode .hands{display:none}
-#kLayer{position:absolute;inset:0;z-index:1;display:none;pointer-events:none;overflow:hidden}
-/* 赛道：真实卡丁车游戏赛道质感（渐变 + 透视虚线 + 流动） */
-.kRoad{position:absolute;left:-20%;right:-20%;top:38%;bottom:-30%;
-  background:linear-gradient(180deg,#1b2b3d,#0d1622 60%,#080e16);
-  transform:perspective(300px) rotateX(56deg);transform-origin:50% 0;
-  border-top:3px solid rgba(120,210,255,.35)}
-.kRoad::before{content:'';position:absolute;inset:0;
-  background:repeating-linear-gradient(0deg,rgba(255,255,255,.16) 0 4px,transparent 4px 46px);
-  animation:kRoadMove .55s linear infinite}
-@keyframes kRoadMove{from{background-position:0 0}to{background-position:0 46px}}
-.kSky{position:absolute;inset:0 0 55% 0;
-  background:linear-gradient(180deg,#12304d,#1d4a6e 60%,rgba(29,74,110,0))}
-.kStars{position:absolute;inset:0 0 55% 0;opacity:.6;
-  background-image:radial-gradient(1.5px 1.5px at 20% 30%,#fff,transparent),
-    radial-gradient(1.5px 1.5px at 62% 18%,#fff,transparent),
-    radial-gradient(2px 2px at 82% 42%,#BEE8FF,transparent),
-    radial-gradient(1.5px 1.5px at 38% 55%,#fff,transparent)}
-/* 两辆车并排（我 = 蓝白，对手 = 橙） */
-.kCar{position:absolute;bottom:6px;width:108px;height:61px;border-radius:12px;
-  background-size:cover;background-position:center;
-  box-shadow:0 6px 16px rgba(0,0,0,.6),0 0 0 2px rgba(255,255,255,.18);
-  transition:left .28s ease}
-#kMe{background-image:url('assets/kart_me.png');z-index:5;
-  animation:kCarBob .5s ease-in-out infinite}
-#kFoe{background-image:url('assets/kart_foe.png');z-index:4;opacity:.95;
-  animation:kCarBob .62s ease-in-out infinite -.2s}
-@keyframes kCarBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-#kMe.boost{animation:kBoost .5s ease-out}
-@keyframes kBoost{0%{transform:translateX(-14px) scale(1.1) rotate(-4deg)}
-  100%{transform:translateX(0) scale(1) rotate(0)}}
-/* 氮气蓝焰 */
-.kNitro{position:absolute;bottom:20px;width:90px;height:26px;z-index:3;opacity:0;
-  border-radius:50%;background:linear-gradient(90deg,rgba(120,230,255,0),#7BE1FF 45%,#FFF);
-  filter:blur(2px)}
-.kNitro.on{animation:kNitroFx .55s ease-out}
-@keyframes kNitroFx{0%{opacity:1;transform:scaleX(.4) translateX(30px)}
-  100%{opacity:0;transform:scaleX(1.9) translateX(-90px)}}
+  18%{opacity:1;transform:translateY(-13px) scale(1.22)}
+  100%{opacity:0;transform:translateY(-64px) scale(1)}}
+.lVignette{position:absolute;inset:0;z-index:9;pointer-events:none;opacity:0}
+.lVignette.hurt{animation:lVigHurt .55s ease-out}
+@keyframes lVigHurt{0%{opacity:0;box-shadow:inset 0 0 0 rgba(255,0,0,0)}
+  22%{opacity:1;box-shadow:inset 0 0 140px rgba(255,20,10,.9)}
+  100%{opacity:0;box-shadow:inset 0 0 40px rgba(255,20,10,0)}}
+#lStage.shake{animation:lShake .42s ease}
+@keyframes lShake{0%,100%{transform:translate(0,0)}18%{transform:translate(-7px,4px)}
+  36%{transform:translate(7px,-5px)}54%{transform:translate(-5px,-3px)}
+  72%{transform:translate(4px,3px)}88%{transform:translate(-2px,1px)}}
+
+/* ===== 第 5 关 · 卡丁车竞速（真实赛车画面）=====
+   真实跑跑卡丁车（抠图）+ 侧视赛道：天空/远山城市/路面虚线/红白路肩/路灯
+   全部随车速滚动。每敲对一个字冒一串速度线，每跑完一句放氮气冲刺。 */
+.prompt.kMode{background:#08101f;position:relative;overflow:hidden;height:400px;
+  padding:0;border:2px solid #24405e;border-radius:18px}
+.prompt.kMode .magicCircle,.prompt.kMode .hands,.prompt.kMode .pyScene{display:none !important}
+/* —— 打字 HUD —— */
+.prompt.kMode .pyhint{position:absolute;left:0;right:0;bottom:66px;z-index:9;margin:0;text-align:center}
+.prompt.kMode .pyhint .ph{background:rgba(6,14,24,.68);border:1px solid rgba(110,200,255,.32);
+  border-radius:10px;padding:3px 13px;gap:8px;box-shadow:0 4px 14px rgba(0,0,0,.6)}
+.prompt.kMode .pyhint .hz{font-size:18px;color:#DFF3FF;
+  font-family:"PingFang SC","Microsoft YaHei",sans-serif;text-shadow:0 2px 6px #000}
+.prompt.kMode .pyhint .arrow,.prompt.kMode .pyhint .py,.prompt.kMode .pyhint .pic{display:none}
+.prompt.kMode .target{position:absolute;left:0;right:0;bottom:24px;z-index:9;margin:0;
+  font-size:28px;letter-spacing:5px;text-align:center;text-shadow:0 3px 8px #000;color:#8FA6BE}
+.prompt.kMode .target .ch{border-radius:6px;padding:0 1px;color:#7C93A8;transition:all .12s}
+.prompt.kMode .target .ch.ok{color:#54E08A;text-shadow:0 0 10px rgba(84,224,138,.6),0 3px 8px #000}
+.prompt.kMode .target .ch.cur{background:transparent;box-shadow:none;color:#FFF;transform:scale(1.16);
+  text-shadow:0 0 14px #6FE0FF,0 0 5px #2BA8E0,0 3px 8px #000}
+.prompt.kMode .target .ch.bad{background:transparent;color:#FF5C5C}
+.prompt.kMode .hint{position:absolute;left:0;right:0;bottom:5px;z-index:9;margin:0;
+  font-size:12px;text-align:center;color:#8FA6BE;text-shadow:0 2px 5px #000}
+.prompt.kMode .hint b{color:#7BE1FF}
+
+/* —— 画面 —— */
+#kStage{position:absolute;inset:0;overflow:hidden;border-radius:16px;background:#070d1a;display:none}
+#kStage .kSky{position:absolute;left:0;right:0;top:0;bottom:172px;
+  background:linear-gradient(180deg,#07102b 0%,#1b1b46 38%,#4b2450 62%,#9c4436 82%,#e08b3f 100%)}
+#kStage .kSun{position:absolute;left:62%;top:20%;width:86px;height:86px;border-radius:50%;
+  background:radial-gradient(circle,#FFF0C0 0%,#FFB454 46%,rgba(255,120,40,0) 72%);
+  opacity:.9;filter:blur(.5px)}
+#kStage .kCity{position:absolute;left:0;right:0;bottom:166px;height:120px;
+  pointer-events:none;overflow:hidden;z-index:1}
+.kBld{position:absolute;bottom:0;border-radius:2px 2px 0 0;
+  background:linear-gradient(180deg,#0e1730,#080e1c);
+  box-shadow:inset 0 0 0 1px rgba(90,130,190,.16)}
+.kBld::after{content:'';position:absolute;inset:3px 2px 60% 2px;
+  background-image:radial-gradient(1px 1px at 3px 3px,rgba(255,220,150,.5),transparent),
+    radial-gradient(1px 1px at 8px 7px,rgba(255,220,150,.35),transparent);
+  background-size:11px 9px}
+#kStage .kFog{position:absolute;left:0;right:0;bottom:166px;height:60px;z-index:2;
+  background:linear-gradient(180deg,rgba(224,139,63,.18),rgba(224,139,63,0));pointer-events:none}
+#kStage .kHaze{position:absolute;left:0;right:0;bottom:160px;height:52px;
+  background:linear-gradient(180deg,rgba(224,139,63,0),rgba(224,139,63,.28));pointer-events:none}
+/* 路面 */
+#kStage .kRoad{position:absolute;left:0;right:0;bottom:0;height:172px;overflow:hidden;
+  background:linear-gradient(180deg,#39404f 0%,#232a38 18%,#151b26 60%,#0b1017 100%)}
+#kStage .kRoad::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,rgba(6,10,16,.85),transparent 12%,transparent 88%,rgba(6,10,16,.85))}
+#kStage .kCurb{position:absolute;left:0;right:0;top:0;height:8px;
+  background:repeating-linear-gradient(90deg,#D6412F 0 24px,#EDEDED 24px 48px);
+  box-shadow:0 2px 8px rgba(0,0,0,.5)}
+#kStage .kDashes{position:absolute;left:0;right:0;top:46%;height:6px;
+  background:repeating-linear-gradient(90deg,#EDE6C4 0 38px,transparent 38px 86px);
+  opacity:.7}
+#kStage .kDashes2{position:absolute;left:0;right:0;top:20%;height:3px;
+  background:repeating-linear-gradient(90deg,rgba(200,220,240,.45) 0 20px,transparent 20px 56px);
+  opacity:.5}
+/* 路灯 / 路边杆 */
+.kPolesLayer{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+.kPole{position:absolute;bottom:166px;width:4px;border-radius:2px;
+  background:linear-gradient(180deg,#5B6A80,#2A3346);z-index:2}
+.kPole::after{content:'';position:absolute;left:-7px;top:-6px;width:18px;height:10px;border-radius:50%;
+  background:radial-gradient(circle,#FFE9A8,rgba(255,200,90,0) 72%);opacity:.85}
 /* 速度线 */
-.kSpeed{position:absolute;height:2px;border-radius:2px;z-index:3;pointer-events:none;
-  background:linear-gradient(90deg,rgba(255,255,255,0),rgba(190,240,255,.95));
-  animation:kSpeedFx .42s ease-out forwards}
-@keyframes kSpeedFx{0%{opacity:1;transform:translateX(0) scaleX(.4)}
-  100%{opacity:0;transform:translateX(-150px) scaleX(1.6)}}
-/* 进度对比条 */
-.kTrack{position:absolute;left:16px;right:16px;top:12px;z-index:6}
-.kBar{position:relative;height:12px;border-radius:999px;background:rgba(10,20,30,.8);
-  border:2px solid rgba(255,255,255,.35);overflow:hidden}
-.kBar i{position:absolute;top:0;bottom:0;border-radius:999px;transition:width .3s}
-#kProgress{left:0;background:linear-gradient(90deg,#4FD0FF,#2D7BFF);z-index:2}
-#kFoeProg{left:0;background:linear-gradient(90deg,rgba(255,160,60,.85),rgba(255,110,30,.85));z-index:1}
-.kLabels{display:flex;justify-content:space-between;color:#CFE9FF;font-size:11px;
-  font-weight:800;letter-spacing:1px;margin-bottom:4px;text-shadow:0 2px 5px #000}
-.kLabels b{color:#7BE1FF}
-/* ===== 第 4 关 · CF 挑战模式（BOSS 战）===== */
-.prompt.bMode{background:#0a0f15;position:relative;overflow:hidden;min-height:300px;
-  border:2px solid #2a3644}
-.prompt.bMode .pyhint,.prompt.bMode .target{position:relative;z-index:5;color:#F2F8FF}
-.prompt.bMode .pyhint i{color:#FFD86E}
-.prompt.bMode .hint{z-index:6}
-#bLayer{position:absolute;inset:0;z-index:1;pointer-events:none;display:none}
-#bLayer::after{content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse at 74% 62%,rgba(255,60,30,.16),transparent 62%)}
-#bBoss{position:absolute;right:-26px;bottom:-14px;height:224px;width:auto;
-  filter:drop-shadow(0 6px 16px rgba(0,0,0,.75)) drop-shadow(0 0 12px rgba(255,80,40,.35));
-  animation:bBreathe 2.4s ease-in-out infinite}
-@keyframes bBreathe{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-6px) scale(1.012)}}
-#bBoss.hit{animation:bHit .3s ease-out}
-@keyframes bHit{0%{filter:brightness(2.6) saturate(1.6) drop-shadow(0 0 22px #FF3B1F);
-  transform:translateX(12px) rotate(3deg)}100%{filter:none;transform:translateX(0)}}
-#bBoss.attack{animation:bAtk .5s ease-out}
-@keyframes bAtk{0%{transform:scale(1) translateX(0)}40%{transform:scale(1.1) translateX(-46px) translateY(8px)}
-  100%{transform:scale(1) translateX(0)}}
-#bLayer.hurtS{animation:bHurt .45s ease}
-@keyframes bHurt{0%,100%{box-shadow:none}25%{box-shadow:inset 0 0 110px rgba(255,30,20,.7)}60%{box-shadow:inset 0 0 70px rgba(255,30,20,.35)}}
-.bHpTop{position:absolute;left:16px;right:16px;top:8px;z-index:7;color:#FFF}
-.bHpName{font-size:12px;font-weight:900;letter-spacing:2px;color:#FFC8C8;
-  text-shadow:0 2px 6px #000;margin-bottom:6px;display:flex;justify-content:space-between;
-  line-height:1.1;height:14px;align-items:center}
-.bHpBar{height:15px;border:2px solid rgba(255,255,255,.8);border-radius:999px;
-  background:rgba(10,14,20,.85);overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.7)}
-.bHpBar i{display:block;height:100%;width:100%;border-radius:999px;
-  background:linear-gradient(90deg,#FF2D2D,#FF7A1E 60%,#FFD24A);transition:width .3s ease}
-.bPvWrap{position:absolute;left:16px;bottom:12px;z-index:6;width:180px}
-.bPvName{font-size:11px;font-weight:800;color:#CFE3F5;letter-spacing:1px;margin-bottom:3px;
-  text-shadow:0 2px 5px #000}
-.bPvBar{height:11px;border:2px solid rgba(255,255,255,.7);border-radius:999px;
-  background:rgba(8,12,18,.85);overflow:hidden}
-.bPvBar i{display:block;height:100%;width:100%;border-radius:999px;
-  background:linear-gradient(90deg,#4FD0FF,#3E8BFF);transition:width .25s}
-.bPvWrap.low .bPvBar i{background:linear-gradient(90deg,#FF9A3D,#FF3D3D)}
-.bDmg{position:absolute;z-index:8;color:#FFE45C;font:900 26px/1 Consolas,monospace;
-  text-shadow:0 3px 0 #7A1200,0 0 12px rgba(255,120,0,.9);pointer-events:none;
-  animation:zDmgFly .8s ease-out forwards}
-.bFlash{position:absolute;right:150px;bottom:120px;width:90px;height:90px;z-index:7;
+.kStream{position:absolute;height:2px;border-radius:2px;z-index:3;pointer-events:none;
+  background:linear-gradient(90deg,rgba(190,240,255,0),rgba(200,245,255,.95));
+  animation:kStreamFx .5s linear forwards}
+@keyframes kStreamFx{0%{opacity:0;transform:translateX(0) scaleX(.3)}
+  20%{opacity:1}100%{opacity:0;transform:translateX(-190px) scaleX(1.5)}}
+.kStream.big{height:3px;background:linear-gradient(90deg,rgba(255,255,255,0),#FFF,#8FE6FF)}
+/* —— 赛车 —— */
+.kCar{position:absolute;z-index:6;width:178px;
+  transition:left .3s cubic-bezier(.3,.8,.4,1)}
+.kCar img{width:100%;display:block;
+  filter:drop-shadow(0 7px 10px rgba(0,0,0,.65))}
+.kCar::after{content:'';position:absolute;left:12%;right:12%;bottom:-7px;height:12px;
+  border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,.55),rgba(0,0,0,0) 72%)}
+#kMe{left:24%;bottom:104px}
+#kMe img{transform:scaleX(-1);animation:kBob .42s ease-in-out infinite}
+#kFoe{left:70%;bottom:118px;width:156px;z-index:5}
+#kFoe img{transform:scaleX(-1);animation:kBob .55s ease-in-out infinite -.2s}
+@keyframes kBob{0%,100%{transform:scaleX(-1) translateY(0) rotate(0)}
+  50%{transform:scaleX(-1) translateY(-3px) rotate(-1deg)}}
+#kMe.puff img{filter:drop-shadow(0 7px 10px rgba(0,0,0,.65)) drop-shadow(0 0 10px rgba(130,235,255,.9))}
+#kMe.boost{transform:translateX(20px) scale(1.05)}
+#kMe.boost img{animation:kBob .22s ease-in-out infinite}
+#kFoe.pass{opacity:.75}
+/* 尾焰 */
+.kFlame{position:absolute;left:-30px;bottom:20px;width:56px;height:18px;border-radius:50%;
+  pointer-events:none;opacity:0;transform-origin:100% 50%;
+  background:linear-gradient(90deg,rgba(120,220,255,0),#5FD8FF 34%,#DFF8FF 72%,#FFF);
+  filter:blur(2.5px)}
+#kMe .kFlame{animation:kFlameIdle .28s steps(2) infinite}
+@keyframes kFlameIdle{0%,100%{opacity:.35;transform:scaleX(.6)}50%{opacity:.6;transform:scaleX(.85)}}
+#kMe.boost .kFlame{opacity:1;animation:kFlameBig .18s ease-out infinite alternate}
+@keyframes kFlameBig{0%{transform:scaleX(1) scaleY(1)}100%{transform:scaleX(1.7) scaleY(.8)}}
+#kFoe .kFlame{background:linear-gradient(90deg,rgba(255,160,60,0),#FFB347 40%,#FFE9A8 78%,#FFF);
+  animation:kFlameIdle .34s steps(2) infinite}
+/* 终点线：进度 70% 后从右边逼近 */
+.kFinish{position:absolute;bottom:104px;z-index:3;width:30px;height:0;
+  opacity:0;transition:opacity .3s;pointer-events:none}
+.kFinish .kChk{position:absolute;left:0;right:0;bottom:0;height:150px;
+  background:repeating-conic-gradient(#fff 0% 25%,#15181e 0% 50%) 0 0/15px 15px;
+  box-shadow:0 0 24px rgba(255,255,255,.35)}
+.kFinish .kFlag{position:absolute;left:50%;bottom:146px;transform:translateX(-50%);
+  width:2px;height:42px;background:#9FB4C8}
+.kFinish .kFlag::after{content:'🏁';position:absolute;left:2px;top:-4px;font-size:20px}
+.kFinish.show{opacity:1}
+/* 底部压暗带：打字区不压在赛车上 */
+.kHudScrim{position:absolute;left:0;right:0;bottom:0;height:118px;z-index:8;pointer-events:none;
+  background:linear-gradient(180deg,rgba(4,8,16,0) 0%,rgba(4,8,16,.6) 30%,rgba(4,8,16,.92) 70%,rgba(4,8,16,.97) 100%)}
+.kHudScrim::before{content:'';position:absolute;left:8%;right:8%;top:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(120,210,255,.4),transparent)}
+/* 震动 */
+#kStage.shake{animation:kShake .36s ease}
+@keyframes kShake{0%,100%{transform:translate(0,0)}25%{transform:translate(-5px,3px)}
+  50%{transform:translate(5px,-2px)}75%{transform:translate(-3px,2px)}}
+/* —— HUD —— */
+.kHud{position:absolute;left:0;right:0;top:0;z-index:10;padding:9px 14px 0;
+  background:linear-gradient(180deg,rgba(4,8,16,.82),rgba(4,8,16,0))}
+.kTrack{position:relative;height:14px;border-radius:999px;overflow:hidden;
+  background:rgba(8,14,24,.85);border:2px solid rgba(150,210,255,.35);
+  box-shadow:inset 0 0 10px rgba(0,0,0,.7)}
+.kTrack .kFin{position:absolute;right:0;top:0;bottom:0;width:16px;
+  background:repeating-conic-gradient(#fff 0% 25%,#111 0% 50%) 0 0/8px 8px}
+.kMark{position:absolute;top:50%;width:13px;height:13px;margin-top:-6.5px;margin-left:-6.5px;
+  border-radius:50%;transition:left .3s ease;box-shadow:0 0 8px currentColor}
+#kMarkMe{background:#3FC8FF;color:#3FC8FF;z-index:3;border:2px solid #EAF8FF}
+#kMarkFoe{background:#FF8A3D;color:#FF8A3D;z-index:2;border:2px solid #FFE6D0}
+.kHudRow{display:flex;justify-content:space-between;align-items:center;
+  font-size:11px;font-weight:800;letter-spacing:1px;color:#CFE9FF;
+  text-shadow:0 2px 6px #000;margin-bottom:4px}
+.kHudRow .kMeTxt{color:#7BE1FF}
+.kHudRow .kFoeTxt{color:#FFB07A}
+.kSpd{position:absolute;right:16px;top:56px;z-index:9;text-align:right;
+  color:#DFF6FF;font-family:Consolas,monospace;text-shadow:0 2px 8px #000;pointer-events:none}
+.kSpd b{font-size:26px;font-weight:900;letter-spacing:1px}
+.kSpd i{font-style:normal;font-size:10px;opacity:.8;margin-left:3px}
+.kBanner{position:absolute;left:50%;top:34%;transform:translate(-50%,-50%);z-index:12;
+  font-size:30px;font-weight:900;letter-spacing:6px;color:#7BE1FF;opacity:0;white-space:nowrap;
+  text-shadow:0 3px 0 #08324A,0 0 22px rgba(90,210,255,.95);pointer-events:none}
+.kBanner.on{animation:kBannerFx .95s ease-out}
+@keyframes kBannerFx{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}
+  20%{opacity:1;transform:translate(-50%,-50%) scale(1.14)}
+  72%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
+
+/* ===== 第 4 关 · CF 挑战模式（真正的第一人称 BOSS 战）=====
+   真实 CF 生化暴君立绘 + 第一人称步枪 + 准星 + 弹道 + 命中火星 + 弹孔累积，
+   每敲对一个拼音字母 = 打出一发实弹（后坐力/枪口火光/弹壳/伤害数字）。
+   BOSS 会蓄力后扑击，屏幕震动 + 红色暗角 + 扣血。 */
+.prompt.bMode{background:#05080c;position:relative;overflow:hidden;height:396px;
+  padding:0;border:2px solid #2a3644;border-radius:18px}
+.prompt.bMode .magicCircle,.prompt.bMode .hands,.prompt.bMode .pyScene{display:none !important}
+/* —— 打字 HUD 压在画面下沿 —— */
+.prompt.bMode .pyhint{position:absolute;left:0;right:0;bottom:70px;z-index:9;margin:0;text-align:center}
+.prompt.bMode .pyhint .ph{background:rgba(6,10,16,.66);border:1px solid rgba(120,190,255,.3);
+  border-radius:10px;padding:3px 14px;gap:8px;box-shadow:0 4px 14px rgba(0,0,0,.65);
+  backdrop-filter:blur(3px)}
+.prompt.bMode .pyhint .hz{font-size:19px;color:#FFE7A8;
+  font-family:"PingFang SC","Microsoft YaHei",sans-serif;text-shadow:0 2px 6px #000}
+.prompt.bMode .pyhint .arrow,.prompt.bMode .pyhint .py,.prompt.bMode .pyhint .pic{display:none}
+.prompt.bMode .target{position:absolute;left:0;right:0;bottom:24px;z-index:9;margin:0;
+  font-size:31px;letter-spacing:8px;text-align:center;text-shadow:0 3px 8px #000}
+.prompt.bMode .target .ch{border-radius:6px;padding:0 2px;color:#6C7E92;transition:all .12s}
+.prompt.bMode .target .ch.ok{color:#4FE07C;text-shadow:0 0 10px rgba(80,255,140,.55),0 3px 8px #000}
+.prompt.bMode .target .ch.cur{background:transparent;box-shadow:none;color:#FFF;transform:scale(1.18);
+  text-shadow:0 0 16px #FFC226,0 0 5px #FF9D00,0 3px 8px #000}
+.prompt.bMode .target .ch.bad{background:transparent;color:#FF5252}
+.prompt.bMode .hint{position:absolute;left:0;right:0;bottom:4px;z-index:9;margin:0;
+  font-size:12px;text-align:center;color:#93A9BE;text-shadow:0 2px 5px #000}
+.prompt.bMode .hint b{color:#FFD24A}
+
+/* —— 舞台 —— */
+#bStage{position:absolute;inset:0;overflow:hidden;border-radius:16px;background:#060a0f;display:none}
+#bStage .bScene{position:absolute;inset:-18px;background:url('assets/scene.jpg') center/cover no-repeat;
+  filter:blur(4.5px) brightness(.34) saturate(.55) hue-rotate(-14deg);transform:scale(1.08)}
+#bStage .bFog{position:absolute;inset:0;pointer-events:none;z-index:2;
+  background:radial-gradient(ellipse 46% 58% at 68% 54%,rgba(190,40,18,.24),transparent 68%),
+             linear-gradient(180deg,rgba(4,6,10,.86),rgba(4,6,10,.04) 40%,rgba(4,6,10,.94)),
+             linear-gradient(90deg,rgba(3,5,8,.92),rgba(3,5,8,.2) 34%,transparent 55%)}
+#bStage.enraged .bFog{background:radial-gradient(ellipse 52% 64% at 68% 54%,rgba(230,50,20,.36),transparent 68%),
+             linear-gradient(180deg,rgba(10,2,2,.88),rgba(20,4,2,.04) 40%,rgba(10,2,2,.94)),
+             linear-gradient(90deg,rgba(8,2,2,.94),rgba(10,2,2,.22) 34%,transparent 55%)}
+/* 纵深：地面光带 + 左侧集装箱剪影 + 顶部管线，让画面不是一个红平面 */
+#bStage .bDepth{position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+#bStage .bFloor{position:absolute;left:0;right:0;top:64%;bottom:0;
+  background:linear-gradient(180deg,rgba(30,42,54,0) 0%,rgba(22,32,42,.5) 34%,rgba(10,14,20,.86) 100%)}
+#bStage .bFloorLine{position:absolute;left:0;right:0;top:64%;height:2px;
+  background:linear-gradient(90deg,transparent,rgba(120,180,220,.16) 22%,rgba(160,210,240,.1) 55%,transparent);
+  box-shadow:0 0 18px rgba(90,150,200,.22)}
+#bStage .bBox{position:absolute;border:1px solid rgba(120,160,200,.1);border-radius:3px;
+  background:linear-gradient(150deg,rgba(24,34,46,.95),rgba(9,13,19,.98));
+  box-shadow:inset 0 0 26px rgba(0,0,0,.85)}
+#bStage .bBox.b1{left:-3%;bottom:8%;width:29%;height:52%;transform:skewY(-1.2deg)}
+#bStage .bBox.b2{left:22%;bottom:6%;width:19%;height:34%;transform:skewY(.8deg)}
+#bStage .bPipe{position:absolute;left:0;right:0;top:2%;height:9px;
+  background:linear-gradient(180deg,rgba(40,54,70,.55),rgba(12,18,26,.9));
+  box-shadow:0 3px 10px rgba(0,0,0,.7)}
+#bStage .bPipe::before{content:'';position:absolute;left:0;right:0;top:-7px;height:6px;
+  background:repeating-linear-gradient(90deg,rgba(60,78,96,.5) 0 3px,transparent 3px 26px)}
+#bStage .bEmbers{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:3}
+.bEmber{position:absolute;width:3px;height:3px;border-radius:50%;
+  background:radial-gradient(circle,#FFD27A,#FF6A1E);opacity:0;
+  animation:bEmberUp linear forwards}
+@keyframes bEmberUp{0%{opacity:0;transform:translateY(0) scale(.6)}
+  14%{opacity:.95}78%{opacity:.6}100%{opacity:0;transform:translateY(-170px) scale(.25)}}
+
+/* —— BOSS —— */
+.bBossWrap{position:absolute;right:10%;bottom:94px;height:258px;z-index:4;
+  transform-origin:50% 88%;animation:bBreathe 2.7s ease-in-out infinite}
+#bBoss{height:100%;width:auto;display:block;
+  filter:drop-shadow(0 10px 18px rgba(0,0,0,.8)) drop-shadow(0 0 16px rgba(255,60,30,.3))}
+@keyframes bBreathe{0%,100%{transform:translate(0,0) scale(1)}
+  33%{transform:translate(-5px,-5px) scale(1.016)}
+  70%{transform:translate(5px,-1px) scale(1.008)}}
+.bBossWrap.hit{animation:bFlinch .24s ease-out}
+@keyframes bFlinch{0%{transform:translateX(-9px) rotate(-2deg) scale(.988);filter:brightness(2.3)}
+  100%{transform:translateX(0) rotate(0) scale(1);filter:brightness(1)}}
+.bBossWrap.enrage{animation:bBreathe 1.5s ease-in-out infinite}
+.bBossWrap.lunge{animation:bLunge .52s ease-out}
+@keyframes bLunge{0%{transform:scale(1) translate(0,0)}
+  28%{transform:scale(1.24) translate(-28px,20px);filter:brightness(1.45)}
+  100%{transform:scale(1) translate(0,0);filter:brightness(1)}}
+.bBossWrap.dead{animation:bDead 1s ease-in forwards}
+@keyframes bDead{0%{filter:brightness(1)}
+  16%{filter:brightness(3.2) saturate(.25);transform:translateX(-12px)}
+  34%{filter:brightness(.35);transform:translateX(14px) rotate(7deg)}
+  100%{filter:brightness(.06);transform:translateY(46px) rotate(24deg) scale(.78);opacity:0}}
+.bAura{position:absolute;left:50%;top:52%;width:150%;height:132%;transform:translate(-50%,-50%);
+  border-radius:50%;pointer-events:none;opacity:0;z-index:-1;
+  background:radial-gradient(circle,rgba(255,64,20,.6),rgba(255,40,10,0) 66%)}
+.bAura.charging{animation:bAuraCharge .72s ease-in-out}
+@keyframes bAuraCharge{0%{opacity:0;transform:translate(-50%,-50%) scale(.7)}
+  58%{opacity:1;transform:translate(-50%,-50%) scale(1.06)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1.28)}}
+.bWound{position:absolute;inset:0;pointer-events:none}
+.bHole{position:absolute;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;
+  background:radial-gradient(circle,#14020 30%,#5A0C04 52%,rgba(255,90,30,.45) 68%,transparent 80%);
+  box-shadow:0 0 7px rgba(255,70,15,.7);animation:bHoleIn .16s ease-out;opacity:.9}
+@keyframes bHoleIn{0%{transform:scale(2.6);opacity:0}100%{transform:scale(1);opacity:.95}}
+
+/* —— 底部 HUD 压暗带：打字区不再"飘"在画面上 —— */
+.bHudScrim{position:absolute;left:0;right:0;bottom:0;height:124px;z-index:5;pointer-events:none;
+  background:linear-gradient(180deg,rgba(2,4,7,0) 0%,rgba(2,4,7,.55) 34%,rgba(2,4,7,.9) 72%,rgba(2,4,7,.96) 100%)}
+.bHudScrim::before{content:'';position:absolute;left:6%;right:6%;top:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,160,80,.35),transparent)}
+/* —— 准星 —— */
+.bCross{position:absolute;left:60%;top:44%;width:54px;height:54px;margin:-27px 0 0 -27px;
+  z-index:6;pointer-events:none;transition:transform .07s}
+.bCross i{position:absolute;background:rgba(232,246,255,.92);box-shadow:0 0 6px rgba(0,0,0,.9)}
+.bCross i.t{left:50%;top:0;width:2px;height:13px;margin-left:-1px}
+.bCross i.b{left:50%;bottom:0;width:2px;height:13px;margin-left:-1px}
+.bCross i.l{top:50%;left:0;height:2px;width:13px;margin-top:-1px}
+.bCross i.r{top:50%;right:0;height:2px;width:13px;margin-top:-1px}
+.bCross span{position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;
+  border-radius:50%;background:#FF4B2B;box-shadow:0 0 9px #FF4B2B}
+.bCross.fire{transform:scale(1.34)}
+/* 命中标记 */
+.bHitMark{position:absolute;z-index:7;width:34px;height:34px;margin:-17px 0 0 -17px;
+  pointer-events:none;opacity:0}
+.bHitMark.on{animation:bHitMarkFx .32s ease-out}
+@keyframes bHitMarkFx{0%{opacity:1;transform:scale(.55)}100%{opacity:0;transform:scale(1.45)}}
+.bHitMark i{position:absolute;width:13px;height:3px;background:#FFF;border-radius:2px;
+  box-shadow:0 0 7px #FF3B1F}
+.bHitMark i.a{left:0;top:7px;transform:rotate(45deg)}
+.bHitMark i.b{right:0;top:7px;transform:rotate(-45deg)}
+.bHitMark i.c{left:0;bottom:7px;transform:rotate(-45deg)}
+.bHitMark i.d{right:0;bottom:7px;transform:rotate(45deg)}
+
+/* —— 步枪 —— */
+.bGun{position:absolute;right:-36px;bottom:14px;width:340px;z-index:8;pointer-events:none;
+  transform:rotate(13deg);transform-origin:78% 78%;
+  filter:drop-shadow(0 8px 14px rgba(0,0,0,.85));transition:transform .06s ease}
+.bGun.kick{transform:rotate(19deg) translate(-9px,-6px)}
+.bMuzzle{position:absolute;left:0;top:0;width:104px;height:104px;margin:-52px 0 0 -52px;
+  z-index:9;border-radius:50%;opacity:0;pointer-events:none;
+  background:radial-gradient(circle,#FFF 0%,#FFE88A 22%,#FF7A1E 46%,rgba(255,90,0,0) 70%)}
+.bMuzzle.on{animation:bMuzzleFx .13s ease-out}
+@keyframes bMuzzleFx{0%{opacity:1;transform:scale(.45) rotate(0)}
+  100%{opacity:0;transform:scale(1.28) rotate(22deg)}}
+.bTracer{position:absolute;height:2.5px;z-index:7;opacity:0;pointer-events:none;
+  background:linear-gradient(90deg,rgba(255,255,255,0),#FFF4C8,#FF9A2B);
+  box-shadow:0 0 8px #FFC65A;transform-origin:0 50%;transform:rotate(var(--ang,0deg))}
+.bTracer.on{animation:bTracerFx .12s linear}
+@keyframes bTracerFx{0%{opacity:1;transform:rotate(var(--ang,0deg)) scaleX(.2)}
+  100%{opacity:0;transform:rotate(var(--ang,0deg)) scaleX(1)}}
+.bSpark{position:absolute;width:110px;height:110px;margin:-55px 0 0 -55px;z-index:6;
   border-radius:50%;opacity:0;pointer-events:none;
-  background:radial-gradient(circle,#FFF 0%,#FFE27A 26%,#FF8A2B 54%,rgba(255,80,0,0) 72%)}
-.bFlash.on{animation:zFlashFx .17s ease-out}
+  background:radial-gradient(circle,#FFF 0%,#FFD36E 18%,#FF5A1E 42%,rgba(180,20,0,0) 70%)}
+.bSpark.on{animation:bSparkFx .28s ease-out}
+@keyframes bSparkFx{0%{opacity:1;transform:scale(.22)}100%{opacity:0;transform:scale(1.55)}}
+
+/* —— HUD —— */
+.bBossHud{position:absolute;left:50%;top:8px;transform:translateX(-50%);width:70%;z-index:10}
+.bBossRow{display:flex;justify-content:space-between;align-items:center;
+  font-size:12px;font-weight:900;letter-spacing:2px;color:#FFC8C8;
+  text-shadow:0 2px 6px #000;margin-bottom:5px;line-height:1.1}
+.bBossRow .bBossPct{color:#FFE45C;font-family:Consolas,monospace;letter-spacing:1px}
+.bHpBar{position:relative;height:16px;border:2px solid rgba(255,220,200,.85);border-radius:4px;
+  background:rgba(10,6,4,.9);overflow:hidden;
+  box-shadow:0 0 16px rgba(255,70,20,.45),inset 0 0 10px rgba(0,0,0,.9)}
+.bHpBar i{display:block;height:100%;width:100%;
+  background:linear-gradient(90deg,#8B1A0A,#E03A10 42%,#FF8A2B 78%,#FFD24A);
+  transition:width .18s ease;box-shadow:0 0 10px rgba(255,120,40,.85)}
+.bHpBar::after{content:'';position:absolute;left:50%;top:0;bottom:0;width:2px;
+  background:rgba(0,0,0,.5)}
+.bPhaseTip{font-size:10px;color:#8FA6BA;margin-top:3px;letter-spacing:1px;
+  text-shadow:0 2px 5px #000}
+.bPlayerHud{position:absolute;left:14px;top:12px;z-index:10;width:150px}
+.bPvName{font-size:10px;font-weight:800;color:#CFE3F5;letter-spacing:1px;
+  margin-bottom:3px;text-shadow:0 2px 5px #000}
+.bPvName b{font-family:Consolas,monospace;color:#8FE0FF}
+.bPvBar{height:10px;border:2px solid rgba(255,255,255,.65);border-radius:999px;
+  background:rgba(6,10,16,.88);overflow:hidden}
+.bPvBar i{display:block;height:100%;width:100%;border-radius:999px;
+  background:linear-gradient(90deg,#4FD0FF,#2D7BFF);transition:width .2s}
+.bPlayerHud.low .bPvBar i{background:linear-gradient(90deg,#FF9A3D,#FF3D3D);
+  animation:bLowPulse .7s ease-in-out infinite}
+@keyframes bLowPulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* —— 受伤 / 提示 —— */
+.bVignette{position:absolute;inset:0;z-index:9;pointer-events:none;opacity:0}
+.bVignette.hurt{animation:bVigHurt .62s ease-out}
+@keyframes bVigHurt{0%{opacity:0;box-shadow:inset 0 0 0 rgba(255,0,0,0)}
+  18%{opacity:1;box-shadow:inset 0 0 150px rgba(255,20,10,.95)}
+  52%{opacity:.75;box-shadow:inset 0 0 90px rgba(255,20,10,.55)}
+  100%{opacity:0;box-shadow:inset 0 0 40px rgba(255,20,10,0)}}
+#bStage.shake{animation:bShake .42s ease}
+@keyframes bShake{0%,100%{transform:translate(0,0)}18%{transform:translate(-7px,4px)}
+  36%{transform:translate(7px,-5px)}54%{transform:translate(-5px,-3px)}
+  72%{transform:translate(4px,3px)}88%{transform:translate(-2px,1px)}}
+.bWarn{position:absolute;left:50%;top:25%;transform:translate(-50%,-50%);z-index:11;
+  font-size:18px;font-weight:900;letter-spacing:3px;color:#FF7A55;opacity:0;
+  text-shadow:0 2px 10px #000,0 0 18px rgba(255,60,20,.95);pointer-events:none;white-space:nowrap}
+.bWarn.on{animation:bWarnFx .8s ease-out}
+@keyframes bWarnFx{0%{opacity:0;transform:translate(-50%,-50%) scale(.7)}
+  20%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
+.bBanner{position:absolute;left:34%;top:30%;transform:translate(-50%,-50%);z-index:12;
+  font-size:26px;font-weight:900;letter-spacing:5px;color:#FFE45C;opacity:0;
+  text-shadow:0 4px 0 #7A1200,0 0 26px rgba(255,110,20,.95);pointer-events:none;white-space:nowrap}
+.bBanner.on{animation:bBannerFx 1.05s ease-out}
+@keyframes bBannerFx{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}
+  18%{opacity:1;transform:translate(-50%,-50%) scale(1.14)}
+  74%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
+.bDmg{position:absolute;z-index:11;color:#FFE45C;font:900 24px/1 Consolas,monospace;
+  text-shadow:0 3px 0 #7A1200,0 0 12px rgba(255,120,0,.95);pointer-events:none;
+  animation:bDmgFly .8s ease-out forwards}
+.bDmg.crit{font-size:32px;color:#FFF1A8}
+@keyframes bDmgFly{0%{opacity:0;transform:translateY(0) scale(.6)}
+  18%{opacity:1;transform:translateY(-13px) scale(1.22)}
+  100%{opacity:0;transform:translateY(-64px) scale(1)}}
+
 /* ===== 第 1 关 · 生化来袭（真实游戏图 + 枪 + 掉血）===== */
 .prompt.zMode{background:#0d1218;padding:0;height:352px;box-shadow:0 10px 30px rgba(10,20,30,.32);border:2px solid #2a3644}
 .prompt.zMode .magicCircle,.prompt.zMode .target,.prompt.zMode .hands,
@@ -2553,7 +2927,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 <body>
 <div id="verTag" style="position:fixed;right:8px;bottom:6px;z-index:200;pointer-events:none;
   font-size:11px;font-weight:700;color:#A896B4;background:rgba(255,255,255,.72);
-  padding:2px 8px;border-radius:8px">v11-12 12:12</div>
+  padding:2px 8px;border-radius:8px">v11-12 14:40</div>
 <div class="aurora"><i></i><i></i><i></i></div>
 <!-- 叶罗丽风：飘落的花瓣 + 闪光魔法尘 -->
 <div class="petals" id="petals"></div>
@@ -2570,6 +2944,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
         <div class="chip">⭐ <span id="starTotal">0</span></div>
         <div class="chip">🏅 <span id="badgeTotal">0</span></div>
         <div class="chip" id="soundChip" style="cursor:pointer" title="点一下开关声音">🔊 声音</div>
+        <div class="chip" id="accChip" style="cursor:pointer" title="想跨设备保存进度就登录，不登录也能玩">👤 登录</div>
       </div>
     </div>
 
@@ -2620,52 +2995,121 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
       <button class="btn ghost sm" id="btnBack">← 回首页</button>
       <div class="progress"><i id="bar"></i></div>
       <div class="chip" id="hudStars">⭐ 0</div>
+      <div class="chip" id="hudAcc" style="cursor:pointer" title="想跨设备保存进度就登录，不登录也能玩">👤 登录</div>
     </div>
 
     <div class="prompt">
       <div class="magicCircle" id="magicCircle"></div>
       <div class="hint" id="hint"></div>
       <div class="target" id="target"></div>
-      <!-- 第 7 关 · 传奇战士砍 BOSS（只在 legend 关显示） -->
-      <div id="lLayer">
+      <!-- 第 7 关 · 传奇沙巴克：战士 vs 祖玛教主（只在 legend 关显示） -->
+      <div id="lStage">
         <div class="lBg"></div>
-        <div class="lPvWrap" id="lPvWrap">
-          <div class="lPvName">❤ 战士生命 <b id="lPvNum">100</b></div>
-          <div class="lPvBar"><i id="lPvFill"></i></div>
+        <div class="lDark"></div>
+
+        <div class="lBossWrap" id="lBossWrap">
+          <div class="lBossAura" id="lBossAura"></div>
+          <img id="lBoss" src="assets/legend_boss.png" alt="祖玛教主">
         </div>
-        <div class="lBossTop">
-          <div class="lBossName">☠ 祖玛教主</div>
-          <div class="lBossBar"><i id="lBossFill"></i></div>
+        <div class="lHeroWrap" id="lHeroWrap">
+          <img id="lHero" src="assets/legend_warrior.png" alt="战士">
         </div>
-        <img id="lHero" src="assets/legend_warrior.jpg" alt="战士">
+
+        <div class="lSlash" id="lSlash"></div>
         <div class="lCrescent" id="lCrescent"></div>
         <div class="lFire" id="lFire"></div>
+        <div class="lSpark" id="lSpark"></div>
+        <div class="lClaw" id="lClaw"><i></i><i></i><i></i></div>
         <div class="lKey" id="lKey">Y</div>
-        <div class="lSkill" id="lSkill">半月弯刀</div>
-      </div>
-      <!-- 第 5 关 · 卡丁车冲刺（只在 kart 关显示） -->
-      <div id="kLayer">
-        <div class="kSky"></div><div class="kStars"></div><div class="kRoad"></div>
-        <div class="kTrack">
-          <div class="kLabels"><span>🏁 你 <b id="kMeTxt">0%</b></span><span>对手 <b id="kFoeTxt">0%</b></span></div>
-          <div class="kBar"><i id="kFoeProg" style="width:0"></i><i id="kProgress" style="width:0"></i></div>
+
+        <div class="lBossTop">
+          <div class="lBossName"><span>☠ 祖玛教主</span><b id="lBossPct">100%</b></div>
+          <div class="lBossBar"><i id="lBossFill"></i></div>
         </div>
-        <div class="kCar" id="kFoe" style="left:52%"></div>
-        <div class="kCar" id="kMe" style="left:18%"></div>
-        <div class="kNitro" id="kNitro" style="left:16px"></div>
+        <div class="lPvWrap" id="lPvWrap">
+          <div class="lPvRow"><span>生命</span><b id="lHpNum">100</b></div>
+          <div class="lPvBar"><i id="lHpFill"></i></div>
+          <div class="lPvRow"><span>魔法</span><b id="lMpNum">100</b></div>
+          <div class="lPvBar lMpBar"><i id="lMpFill"></i></div>
+        </div>
+        <div class="lSkills">
+          <div class="lSk ready" id="lSk1"><em>⚔</em>攻杀</div>
+          <div class="lSk" id="lSk2"><em>🌙</em>半月</div>
+          <div class="lSk fire" id="lSk3"><em>🔥</em>烈火</div>
+        </div>
+        <div class="lVignette" id="lVignette"></div>
+        <div class="lBanner" id="lBanner">半 月 弯 刀</div>
       </div>
-      <!-- 第 4 关 · CF 挑战模式：BOSS 舞台（只在 cfboss 关显示） -->
-      <div id="bLayer">
-        <img id="bBoss" src="assets/boss_cf.png" alt="生化 BOSS">
-        <div class="bHpTop">
-          <div class="bHpName"><span>☣ 生化暴君</span><span id="bHpNum">100%</span></div>
+      <!-- 第 5 关 · 卡丁车竞速：真实赛车画面（只在 kart 关显示） -->
+      <div id="kStage">
+        <div class="kSky"></div>
+        <div class="kSun"></div>
+        <div class="kCity" id="kCity"></div>
+        <div class="kFog"></div>
+        <div class="kHaze"></div>
+        <div class="kRoad">
+          <div class="kCurb" id="kCurb"></div>
+          <div class="kDashes2" id="kDashes2"></div>
+          <div class="kDashes" id="kDashes"></div>
+        </div>
+        <div class="kPolesLayer" id="kPoles"></div>
+
+        <div class="kCar" id="kFoe"><img src="assets/kart_foe.png" alt=""><div class="kFlame"></div></div>
+        <div class="kCar" id="kMe"><img src="assets/kart_me.png" alt=""><div class="kFlame"></div></div>
+
+        <div class="kHud">
+          <div class="kHudRow">
+            <span>🏁 你 <b class="kMeTxt" id="kMeTxt">0%</b></span>
+            <span id="kSegTxt">第 1 / 8 句</span>
+            <span>对手 <b class="kFoeTxt" id="kFoeTxt">10%</b></span>
+          </div>
+          <div class="kTrack">
+            <div class="kFin"></div>
+            <i class="kMark" id="kMarkFoe" style="left:10%"></i>
+            <i class="kMark" id="kMarkMe" style="left:0%"></i>
+          </div>
+        </div>
+        <div class="kFinish" id="kFinish"><div class="kChk"></div><div class="kFlag"></div></div>
+        <div class="kHudScrim"></div>
+        <div class="kSpd"><b id="kSpdNum">0</b><i>km/h</i></div>
+        <div class="kBanner" id="kBanner">氮 气 加 速</div>
+      </div>
+      <!-- 第 4 关 · CF 挑战模式：第一人称 BOSS 战舞台（只在 cfboss 关显示） -->
+      <div id="bStage">
+        <div class="bScene"></div>
+        <div class="bDepth"><div class="bFloor"></div><div class="bFloorLine"></div>
+          <div class="bBox b1"></div><div class="bBox b2"></div><div class="bPipe"></div></div>
+        <div class="bFog"></div>
+        <div class="bEmbers" id="bEmbers"></div>
+
+        <div class="bBossWrap" id="bBossWrap">
+          <div class="bAura" id="bAura"></div>
+          <img id="bBoss" src="assets/boss_cf.png" alt="生化暴君">
+          <div class="bWound" id="bWound"></div>
+        </div>
+
+        <div class="bBossHud">
+          <div class="bBossRow"><span>☣ 生化暴君</span><span class="bBossPct" id="bHpNum">100%</span></div>
           <div class="bHpBar"><i id="bHpFill"></i></div>
+          <div class="bPhaseTip" id="bPhaseTip">敲对拼音就开枪 · 打空血条击倒它</div>
         </div>
-        <div class="bPvWrap" id="bPvWrap">
-          <div class="bPvName">🛡 你的生命 <b id="bPvNum">100</b></div>
+        <div class="bPlayerHud" id="bPlayerHud">
+          <div class="bPvName">🛡 生命 <b id="bPvNum">100</b></div>
           <div class="bPvBar"><i id="bPvFill"></i></div>
         </div>
-        <div class="bFlash" id="bFlash"></div>
+
+        <div class="bCross" id="bCross"><i class="t"></i><i class="r"></i><i class="b"></i><i class="l"></i><span></span></div>
+        <div class="bHitMark" id="bHitMark"><i class="a"></i><i class="b"></i><i class="c"></i><i class="d"></i></div>
+
+        <img class="bGun" id="bGun" src="assets/gun1.png" alt="">
+        <div class="bMuzzle" id="bMuzzle"></div>
+        <div class="bTracer" id="bTracer"></div>
+        <div class="bSpark" id="bSpark"></div>
+
+        <div class="bHudScrim"></div>
+        <div class="bVignette" id="bVignette"></div>
+        <div class="bWarn" id="bWarn">⚠ 暴君蓄力！</div>
+        <div class="bBanner" id="bBanner">狂 暴</div>
       </div>
       <!-- 第 1 关 · 生化来袭：真实游戏图舞台（只在 zombie 关显示） -->
       <div id="zStage" style="display:none">
@@ -3079,7 +3523,11 @@ function load(){
   save.keyMiss = save.keyMiss || {};
   save.best    = save.best    || {};
 }
-function store(){ try{ localStorage.setItem(SKEY, JSON.stringify(save)); }catch(e){} }
+function store(){
+  try{ localStorage.setItem(SKEY, JSON.stringify(save)); }catch(e){}
+  /* 已登录时把进度推到云端（防抖，见文件末尾的云服务模块） */
+  if(typeof cloudQueuePush === 'function') cloudQueuePush();
+}
 function unlocked(id){
   if(id===1) return true;
   const p = LEVELS.find(l=>l.id===id-1);
@@ -4649,8 +5097,9 @@ function bumpCombo(ok, missed){
     if(G.combo > G.maxCombo) G.maxCombo = G.combo;
     comboChipShow(G.combo);
     const ms = [10, 25, 50, 100];
-    if(ms.indexOf(G.combo) >= 0) comboCelebrate(G.combo);
-    else if(G.combo >= 3 && G.combo % 3 === 0) hitStreakFx((G.lvl&&G.lvl.mode)||'type');
+    const quiet = (G.lvl && (G.lvl.mode === 'cfboss' || G.lvl.mode === 'kart'));   /* 生化/赛车关用自身特效，不要粉色弹窗、彩纸 */
+    if(ms.indexOf(G.combo) >= 0){ if(!quiet) comboCelebrate(G.combo); }
+    else if(G.combo >= 3 && G.combo % 3 === 0){ if(!quiet) hitStreakFx((G.lvl&&G.lvl.mode)||'type'); }
   } else {
     G.combo = 0;
     comboChipBreak();
@@ -5168,9 +5617,9 @@ function startLevel(id){
   (function(){
     const pr=document.querySelector('.prompt'); if(pr) pr.classList.remove('zMode');
     const zs=document.getElementById('zStage'); if(zs) zs.style.display='none';
-    const bl=document.getElementById('bLayer'); if(bl) bl.style.display='none';
-    const kl=document.getElementById('kLayer'); if(kl) kl.style.display='none';
-    const ll=document.getElementById('lLayer'); if(ll) ll.style.display='none';
+    const bl=document.getElementById('bStage'); if(bl) bl.style.display='none';
+    const kl=document.getElementById('kStage'); if(kl) kl.style.display='none';
+    const ll=document.getElementById('lStage'); if(ll) ll.style.display='none';
     if(pr) pr.classList.remove('lMode');
     if(typeof LG!=='undefined'){ LG.on=false; if(LG.raf){ cancelAnimationFrame(LG.raf); LG.raf=0; } }
     if(pr) pr.classList.remove('kMode');
@@ -5295,46 +5744,82 @@ function pyStartPool(lv){
    打对字母 = 出刀；连击 5 触发半月弯刀、连击 10 触发烈火剑法。
    BOSS 血条打空过关；BOSS 每 6 秒反击一次，掉光战士生命就失败。
    ========================================================== */
-const LG = { on:false, seq:[], idx:0, boss:100, pv:100, need:24, raf:0, last:0, t:0,
-             combo:0, busy:false };
+/* ==========================================================
+   第 7 关 · 传奇沙巴克（战士 vs 祖玛教主）
+   ----------------------------------------------------------
+   敲对一个键 = 出刀：战士前冲挥砍 + 刀光 + 命中火花 + 教主后仰 + 飘伤害。
+   连击 5 的倍数 → 半月弯刀（大弧横扫，伤害约 2.3 倍）
+   连击 10 的倍数 → 烈火剑法（火柱轰在教主身上，伤害约 3 倍）
+   教主每 5.5 秒蓄力扑击一次，扣战士生命；生命清空则失败。
+   ========================================================== */
+const LG = {
+  on:false, seq:[], idx:0, need:24, raf:0, last:0, t:0,
+  hp:0, hpMax:0, pv:100, mp:100, combo:0, busy:false, enraged:false,
+  ND:30, SD:70, kills:0
+};
+
+function lEl(id){ return document.getElementById(id); }
 
 function startLegend(lv){
   show('play');
   const pr=document.querySelector('.prompt'); if(pr) pr.classList.add('lMode');
-  const ll=document.getElementById('lLayer'); if(ll) ll.style.display='block';
-  const keys=(lv.keys||['y','u','i','o','p']);
+  const st=lEl('lStage'); if(st){ st.style.display='block'; st.classList.remove('shake'); }
+  const hw=lEl('lHeroWrap'); if(hw) hw.className='lHeroWrap';
+  const bw=lEl('lBossWrap'); if(bw) bw.className='lBossWrap';
+  const au=lEl('lBossAura'); if(au) au.classList.remove('charging');
+  const bn=lEl('lBanner'); if(bn) bn.classList.remove('on');
+
+  const keys = (lv.keys && lv.keys.length) ? lv.keys : ['y','u','i','o','p'];
   LG.need = lv.need || 24;
-  LG.seq=[]; for(let i=0;i<LG.need;i++) LG.seq.push(keys[Math.floor(Math.random()*keys.length)]);
-  LG.on=true; LG.idx=0; LG.boss=100; LG.pv=100; LG.combo=0; LG.busy=false;
-  LG.t=0; LG.last=performance.now();
+  LG.seq = [];
+  for(let i=0;i<LG.need;i++) LG.seq.push(keys[Math.floor(Math.random()*keys.length)]);
+
+  /* 伤害：普通刀 ND，技能刀 SD，Boss 血量按总刀数算准，
+     保证最后一刀正好砍空（不会提前结束，也不会砍不完） */
+  const skillCount = Math.floor(LG.need/5);
+  const normalCount = LG.need - skillCount;
+  LG.hpMax = normalCount*LG.ND + skillCount*LG.SD;
+  LG.hp = LG.hpMax;
+
+  LG.on=true; LG.idx=0; LG.pv=100; LG.mp=100; LG.combo=0; LG.busy=false;
+  LG.enraged=false; LG.t=0; LG.last=performance.now(); LG.kills=0;
   G.perfect=true;
   lRefresh();
   lNextKey();
   if(LG.raf) cancelAnimationFrame(LG.raf);
-  LG.raf=requestAnimationFrame(lLoop);
+  LG.raf = requestAnimationFrame(lLoop);
   const bar=document.getElementById('bar'); if(bar) bar.style.width='0%';
   const hs=document.getElementById('hudStars'); if(hs) hs.textContent='⭐ 0';
+  const h=lEl('hint'); if(h) h.innerHTML='按对字母就出刀，连击越高技能越猛';
 }
 
 function lRefresh(){
-  const bf=document.getElementById('lBossFill'), pf=document.getElementById('lPvFill');
-  const pn=document.getElementById('lPvNum'), pw=document.getElementById('lPvWrap');
-  if(bf) bf.style.width=Math.max(0,LG.boss)+'%';
-  if(pf) pf.style.width=Math.max(0,LG.pv)+'%';
-  if(pn) pn.textContent=String(Math.round(Math.max(0,LG.pv)));
+  const pct = LG.hpMax ? Math.max(0,LG.hp)/LG.hpMax*100 : 0;
+  const bf=lEl('lBossFill'), bp=lEl('lBossPct');
+  const hf=lEl('lHpFill'), hn=lEl('lHpNum'), mf=lEl('lMpFill'), mn=lEl('lMpNum'), pw=lEl('lPvWrap');
+  if(bf) bf.style.width = pct.toFixed(2)+'%';
+  if(bp) bp.textContent = Math.ceil(pct)+'%';
+  if(hf) hf.style.width = Math.max(0,LG.pv)+'%';
+  if(hn) hn.textContent = String(Math.round(Math.max(0,LG.pv)));
+  if(mf) mf.style.width = Math.max(0,LG.mp)+'%';
+  if(mn) mn.textContent = String(Math.round(Math.max(0,LG.mp)));
   if(pw) pw.classList.toggle('low', LG.pv<=35);
   const bar=document.getElementById('bar');
   if(bar) bar.style.width=Math.round(LG.idx/LG.need*100)+'%';
+  /* 技能条：连击到 5 亮半月，到 10 亮烈火 */
+  const s2=lEl('lSk2'), s3=lEl('lSk3');
+  if(s2) s2.classList.toggle('ready', LG.combo>=4 && LG.combo<=5);
+  if(s3) s3.classList.toggle('ready', LG.combo>=8 && LG.combo<=10);
   missionProg(`已出刀 ${LG.idx} / ${LG.need}`);
 }
 
 function lNextKey(){
   const k=LG.seq[LG.idx];
-  const el=document.getElementById('lKey');
-  if(!k){ el.style.display='none'; return; }
-  el.style.display='flex'; el.textContent=k.toUpperCase();
-  const h=document.getElementById('hint');
-  if(h) h.innerHTML='按 <b>'+k.toUpperCase()+'</b> 出刀！连击越高技能越猛';
+  const el=lEl('lKey');
+  if(!k){ if(el) el.style.display='none'; return; }
+  if(el){ el.style.display='flex'; el.textContent=k.toUpperCase(); }
+  const h=lEl('hint');
+  if(h) h.innerHTML='按 <b>'+k.toUpperCase()+'</b> 出刀！';
   clearKeys(); markKey(k,'next'); markFinger(k,true);
   try{ gameHint(k,'kb2'); }catch(e){}
 }
@@ -5342,123 +5827,188 @@ function lNextKey(){
 function lLoop(now){
   if(!LG.on) return;
   LG.raf=requestAnimationFrame(lLoop);
-  const dt=Math.min(100, now-(LG.last||now)); LG.last=now;
-  LG.t+=dt;
-  if(LG.t>6000){ LG.t=0; lBossAttack(); }
-}
-
-function lBossAttack(){
-  if(!LG.on) return;
-  const ll=document.getElementById('lLayer');
-  if(ll){ ll.classList.remove('hurt'); void ll.offsetWidth; ll.classList.add('hurt');
-          setTimeout(()=>ll.classList.remove('hurt'),450); }
-  LG.pv=Math.max(0, LG.pv-8);
-  lRefresh();
-  try{ sfx.bad(); }catch(e){}
-  const h=document.getElementById('hint');
-  if(h) h.innerHTML='<b style="color:#FF6B6B">教主反击！生命 -8</b>　继续出刀！';
-  if(LG.pv<=0) lLose();
-}
-
-function legendPress(raw){
-  if(!LG.on || LG.busy) return;
-  const k=String(raw).toLowerCase();
-  const want=LG.seq[LG.idx];
-  if(!want) return;
-  if(k===want){
-    LG.combo++;
-    lSwing(true);
-  }else{
-    G.perfect=false;
-    LG.combo=0;
-    lSwing(false);
+  const dt=Math.min(120, now-(LG.last||now)); LG.last=now;
+  LG.t += dt;
+  if(LG.t > 5500){ LG.t=0; lBossAttack(); }
+  /* 生命偏低时教主"狂暴"，攻击更快 */
+  if(!LG.enraged && LG.hp <= LG.hpMax*0.5){
+    LG.enraged=true;
+    const bw=lEl('lBossWrap'); if(bw) bw.style.animationDuration='1.6s';
+    const h=lEl('hint');
+    if(h) h.innerHTML='<b style="color:#FF6B4A">教主狂暴了！</b> 快砍！';
   }
 }
 
-function lSwing(hit){
-  LG.busy=true;
-  const hero=document.getElementById('lHero'), ll=document.getElementById('lLayer');
-  if(hero){ hero.classList.remove('swing'); void hero.offsetWidth; hero.classList.add('swing');
-            setTimeout(()=>hero.classList.remove('swing'),340); }
-  try{ sfx.shoot(); }catch(e){}
+/* 教主蓄力 → 扑击 */
+function lBossAttack(){
+  if(!LG.on || LG.atkAnim) return;
+  LG.atkAnim=true;
+  const au=lEl('lBossAura');
+  if(au){ au.classList.remove('charging'); void au.offsetWidth; au.classList.add('charging'); }
+  try{ sfx.bad(); }catch(e){}
   setTimeout(()=>{
-    if(!hit){
-      const h=document.getElementById('hint');
-      if(h) h.innerHTML='<b>砍空了！</b> 按 <b>'+LG.seq[LG.idx].toUpperCase()+'</b> 再来一刀';
-      try{ sfx.bad(); }catch(e){}
-      LG.busy=false;
-      return;
-    }
-    /* 命中 BOSS：掉血 + 刀光 + 伤害数字 */
-    LG.idx++;
-    LG.boss=Math.max(0, LG.boss - 100/LG.need);
+    if(!LG.on) return;
+    const bw=lEl('lBossWrap'), st=lEl('lStage'), vg=lEl('lVignette'), hw=lEl('lHeroWrap');
+    if(bw){ bw.classList.remove('lunge'); void bw.offsetWidth; bw.classList.add('lunge'); }
+    if(hw){ hw.classList.remove('hurt'); void hw.offsetWidth; hw.classList.add('hurt'); }
+    if(st){ st.classList.remove('shake'); void st.offsetWidth; st.classList.add('shake');
+            setTimeout(()=>st.classList.remove('shake'),440); }
+    if(vg){ vg.classList.remove('hurt'); void vg.offsetWidth; vg.classList.add('hurt'); }
+    const cw=lEl('lClaw');
+    if(cw){ cw.classList.remove('on'); void cw.offsetWidth; cw.classList.add('on'); }
+    LG.pv=Math.max(0, LG.pv-8);
+    LG.combo=0;
     lRefresh();
-    lStrikeFx();
-    /* 连击技能 */
-    if(LG.combo>0 && LG.combo%10===0) lSkillFire();
-    else if(LG.combo>0 && LG.combo%5===0) lSkillCrescent();
-    if(LG.boss<=0){ lWin(); return; }
-    lNextKey();
-    LG.busy=false;
-  },120);
+    /* 战士头上飘失血 */
+    try{
+      const r=st.getBoundingClientRect();
+      const d=document.createElement('div');
+      d.className='lDmg'; d.style.color='#FF5C5C'; d.style.fontSize='18px';
+      d.textContent='-8';
+      d.style.left='36px'; d.style.top=Math.round(r.height*0.30)+'px';
+      st.appendChild(d); setTimeout(()=>d.remove(),820);
+    }catch(e){}
+    setTimeout(()=>{ if(bw) bw.classList.remove('lunge'); LG.atkAnim=false; }, 520);
+    if(LG.pv<=0) lLose();
+  }, 730);
 }
 
-function lStrikeFx(){
-  const ll=document.getElementById('lLayer');
-  try{
-    const r=ll.getBoundingClientRect();
-    const cx=r.left+r.width*0.62, cy=r.top+r.height*0.46;
-    FX.burst(cx, cy, 16, {speed:300,speed2:80,arc:Math.PI*2,g:520,drag:.9,
-      life:.5,size:3.2,colors:['#FFF6C0','#FFC24A','#FF6A1E','#FFFFFF']});
-    FX.ring(cx, cy, {r0:14,r1:120,life:.45,color:'rgba(200,240,255,.9)',width:5});
-    const d=document.createElement('div');
-    d.className='lDmg'; d.textContent='-'+Math.round(100/LG.need);
-    d.style.left=Math.max(30,r.width*0.60+(Math.random()*40-20))+'px';
-    d.style.top=Math.max(60,r.height*0.36+(Math.random()*30-15))+'px';
-    ll.appendChild(d); setTimeout(()=>d.remove(),820);
-  }catch(e){}
+function legendPress(raw){
+  if(!LG.on) return;          /* 只在过关/倒地时停手，普通挥刀动画不挡按键 */
+  const k=String(raw).toLowerCase();
+  const want=LG.seq[LG.idx];
+  if(!want) return;
+  if(k===want){ LG.combo++; lStrike(true); }
+  else { G.perfect=false; LG.combo=0; lRefresh(); lStrike(false); }
+}
+
+function lStrike(hit){
+  /* 挥砍动作（每次都重放） */
+  const hw=lEl('lHeroWrap');
+  if(hw){ hw.classList.remove('atk'); void hw.offsetWidth; hw.classList.add('atk');
+          setTimeout(()=>hw.classList.remove('atk'),300); }
+  try{ sfx.shoot(); }catch(e){}
+
+  if(!hit){
+    const h=lEl('hint');
+    if(h) h.innerHTML='<b>砍空了！</b> 按 <b>'+LG.seq[LG.idx].toUpperCase()+'</b> 再来一刀';
+    return;
+  }
+
+  /* 伤害立即结算 —— 输入永不被动画吞掉 */
+  const isFire = (LG.combo % 10 === 0);
+  const isCrescent = !isFire && (LG.combo % 5 === 0);
+  const dmg = (isFire || isCrescent) ? LG.SD : LG.ND;
+
+  LG.idx++;
+  LG.hp = Math.max(0, LG.hp - dmg);
+  LG.mp = Math.max(0, LG.mp - (isFire?8:(isCrescent?4:1)));
+  lRefresh();
+  lNextKey();
+
+  /* 视觉稍晚 90ms 出现，和挥刀动作对上 */
+  setTimeout(()=>{
+    if(isFire) lCastFire(dmg);
+    else if(isCrescent) lCastCrescent(dmg);
+    else lNormalHit(dmg);
+    if(LG.hp<=0) lWin();
+  }, 90);
+}
+
+/* 普通命中 */
+function lNormalHit(dmg){
+  const sl=lEl('lSlash');
+  if(sl){ sl.classList.remove('on'); void sl.offsetWidth; sl.classList.add('on'); }
+  lImpact(dmg,false);
   try{ sfx.metalBoom(); }catch(e){}
 }
 
-function lSkillCrescent(){
-  const c=document.getElementById('lCrescent'), sk=document.getElementById('lSkill');
+/* 半月弯刀 */
+function lCastCrescent(dmg){
+  const c=lEl('lCrescent');
   if(c){ c.classList.remove('on'); void c.offsetWidth; c.classList.add('on'); }
-  lShowSkill('半 月 弯 刀');
-  try{ sfx.boom(); }catch(e){}
-}
-
-function lSkillFire(){
-  const f=document.getElementById('lFire'), sk=document.getElementById('lSkill');
-  if(f){ f.classList.remove('on'); void f.offsetWidth; f.classList.add('on'); }
-  lShowSkill('烈 火 剑 法');
+  lBanner('半 月 弯 刀','#BFE8FF');
+  lImpact(dmg,true);
   try{ sfx.boom(); }catch(e){}
   try{
-    const ll=document.getElementById('lLayer'); const r=ll.getBoundingClientRect();
-    FX.burst(r.left+r.width*0.5, r.top+r.height*0.45, 26,
-      {speed:340,speed2:90,arc:Math.PI*2,g:380,drag:.92,life:.7,size:4,
-       colors:['#FFF9D0','#FFC24A','#FF6A1E','#D8380F']});
+    const st=lEl('lStage'), sr=st.getBoundingClientRect();
+    FX.ring(sr.left+sr.width*0.66, sr.top+sr.height*0.46,
+      {r0:20,r1:230,life:.6,color:'rgba(190,240,255,.95)',width:8});
   }catch(e){}
 }
 
-function lShowSkill(txt){
-  const sk=document.getElementById('lSkill');
-  if(!sk) return;
-  sk.textContent=txt;
-  sk.classList.remove('on'); void sk.offsetWidth; sk.classList.add('on');
+/* 烈火剑法 */
+function lCastFire(dmg){
+  const f=lEl('lFire');
+  if(f){ f.classList.remove('on'); void f.offsetWidth; f.classList.add('on'); }
+  lBanner('烈 火 剑 法','#FFC24A');
+  lImpact(dmg,true);
+  try{ sfx.boom(); }catch(e){}
+  try{
+    const st=lEl('lStage'), sr=st.getBoundingClientRect();
+    const bx=sr.left+sr.width*0.70, by=sr.top+sr.height*0.52;
+    FX.burst(bx,by,34,{speed:340,speed2:80,arc:Math.PI*2,g:300,drag:.92,life:.8,size:4.4,
+      colors:['#FFF9D0','#FFC24A','#FF6A1E','#D8380F']});
+    FX.burst(bx,by-30,18,{speed:120,speed2:40,dir:-Math.PI/2,arc:.7,g:-60,drag:.98,life:.9,size:3.4,
+      colors:['#FFE9A8','#FF9A3C','#FF5A1E']});
+  }catch(e){}
+}
+
+/* 命中表现：教主后仰 + 火花 + 伤害数字 */
+function lImpact(dmg, crit){
+  const bw=lEl('lBossWrap'), sp=lEl('lSpark');
+  const st=lEl('lStage');
+  if(bw){ bw.classList.remove('hit'); void bw.offsetWidth; bw.classList.add('hit'); }
+  if(!st) return;
+  try{
+    const sr=st.getBoundingClientRect();
+    const bx=sr.width*0.70, by=sr.height*0.44;
+    if(sp){ sp.style.left=bx+'px'; sp.style.top=by+'px';
+            sp.classList.remove('on'); void sp.offsetWidth; sp.classList.add('on'); }
+    const d=document.createElement('div');
+    d.className='lDmg'+(crit?' crit':'');
+    d.textContent='-'+dmg;
+    d.style.left=Math.max(30, bx-10+Math.random()*24)+'px';
+    d.style.top=Math.max(50, by-30+Math.random()*20)+'px';
+    st.appendChild(d); setTimeout(()=>d.remove(),820);
+    FX.burst(sr.left+bx, sr.top+by, crit?22:12,
+      {speed:300,speed2:60,arc:Math.PI*2,g:520,drag:.9,life:crit?.6:.42,size:crit?4:3,
+       colors:['#FFF6C0','#FFC24A','#FF6A2E','#FFFFFF']});
+  }catch(e){}
+}
+
+function lBanner(txt,color){
+  const bn=lEl('lBanner');
+  if(!bn) return;
+  bn.textContent=txt;
+  if(color) bn.style.color=color;
+  bn.classList.remove('on'); void bn.offsetWidth; bn.classList.add('on');
 }
 
 function lWin(){
   LG.on=false;
   if(LG.raf){ cancelAnimationFrame(LG.raf); LG.raf=0; }
+  PY.alive=false;
+  const bw=lEl('lBossWrap');
+  if(bw){ bw.classList.remove('hit'); bw.classList.add('dead'); }
+  lBanner('击 杀','#FFE45C');
   try{ sfx.win(); }catch(e){}
+  try{
+    const st=lEl('lStage'), sr=st.getBoundingClientRect();
+    const bx=sr.left+sr.width*0.70, by=sr.top+sr.height*0.5;
+    FX.burst(bx,by,44,{speed:420,speed2:90,arc:Math.PI*2,g:300,drag:.92,life:.95,size:5,
+      colors:['#FFF6C0','#FFC24A','#FF6A1E','#FFFFFF','#8B1A0A']});
+    FX.ring(bx,by,{r0:20,r1:260,life:.7,color:'rgba(255,180,80,.9)',width:7});
+  }catch(e){}
   G.perfect = G.perfect && LG.pv>0;
   save.logs.push({d:new Date().toISOString().slice(0,10),lv:G.lvl.id,ok:LG.need,sec:0});
-  setTimeout(()=>levelDone(),700);
+  setTimeout(()=>levelDone(),1000);
 }
 
 function lLose(){
   LG.on=false;
   if(LG.raf){ cancelAnimationFrame(LG.raf); LG.raf=0; }
+  PY.alive=false;
   G.perfect=false;
   try{ sfx.bad(); }catch(e){}
   setTimeout(()=>{
@@ -5466,9 +6016,9 @@ function lLose(){
       <div class="em">☠</div>
       <h2>战士倒下了</h2>
       <p style="color:var(--ink-soft);font-size:15px;line-height:1.8">
-        教主每 6 秒反击一次。<br><b>打得更快</b>，才能在它打死你之前砍倒它。
+        教主每隔几秒就会扑过来一次。<br><b>砍得更快</b>，才能在它打死你之前砍倒它。
       </p>
-      <div class="row"><div>已砍掉教主 ${Math.round(100-LG.boss)}% 的血</div></div>
+      <div class="row"><div>已砍掉教主 ${Math.round(100-LG.hp/LG.hpMax*100)}% 的血</div></div>
       <div class="btns">
         <button class="btn" onclick="closeModal();startLevel(7)">再战一次 ⚔️</button>
         <button class="btn ghost" onclick="backHome()">回首页</button>
@@ -5482,104 +6032,251 @@ function lLose(){
    打字内核仍是整句拼音（PY/pyPress）。每完成一句 → 赛车冲一段 + 氮气；
    对手车按时间自动前进，谁先到终点谁赢。
    ========================================================== */
-const KART = { on:false, me:0, foe:0, raf:0, last:0, foeTimer:0, speed:0 };
+/* ==========================================================
+   第 5 关 · 卡丁车竞速（真实赛车画面）
+   ----------------------------------------------------------
+   · 侧视赛道：天空/远城/路面虚线/红白路肩/路灯，全部按车速滚动。
+   · 每敲对一个字母 → 一串速度线 + 尾焰喷一下 + 车速小涨（有一下就有反馈）。
+   · 每跑完一句 → 氮气冲刺：车往前一窜、尾焰爆开、屏幕轻震、镜头拉近。
+   · 对手车按时间自动前进，位置由"双方进度差"算出：超车时从右边被甩到左边。
+   ========================================================== */
+const KART = {
+  on:false, me:0, foe:6, raf:0, last:0, foeT:0, foeEvery:13000,
+  scroll:0, spd:1, boostUntil:0, done:0, total:1, shakeUntil:0, segIdx:0
+};
+
+function kEl(id){ return document.getElementById(id); }
 
 function startKart(lv){
   pyStartPool(lv);
   show('play');
   const pr = document.querySelector('.prompt');
   if(pr) pr.classList.add('kMode');
-  const kl = document.getElementById('kLayer');
-  if(kl) kl.style.display='block';
-  KART.on=true; KART.me=0; KART.foe=0; KART.foeTimer=0; KART.speed=1;
+  const st = kEl('kStage');
+  if(st){ st.style.display='block'; st.classList.remove('shake'); }
+
+  KART.on=true;
+  KART.me=0; KART.foe=10; KART.done=0;
+  KART.total = Math.max(1, (PY.list||[]).length);
+  KART.foeT=0; KART.foeEvery=13000;
+  KART.scroll=0; KART.spd=1; KART.boostUntil=0; KART.shakeUntil=0; KART.segIdx=0;
   KART.last=performance.now();
+
+  /* 建城市剪影（高低错落的楼） */
+  const city = kEl('kCity');
+  if(city){
+    city.innerHTML='';
+    KART.blds = [];
+    let x = 0;
+    while(x < 1900){
+      const b = document.createElement('div');
+      b.className = 'kBld';
+      const w = 22 + Math.random()*52;
+      const h = 26 + Math.random()*96;
+      b.style.width = w+'px';
+      b.style.height = h+'px';
+      b.dataset.bx = x;
+      city.appendChild(b);
+      KART.blds.push(b);
+      x += w + 6 + Math.random()*26;
+    }
+    KART.cityW = Math.max(1900, x + 120);
+  }
+  /* 建路灯 */
+  const poles = kEl('kPoles');
+  if(poles){
+    poles.innerHTML='';
+    KART.poles = [];
+    for(let i=0;i<8;i++){
+      const p=document.createElement('div');
+      p.className='kPole';
+      p.style.height=(40+Math.random()*24)+'px';
+      p.dataset.bx = i*180;
+      poles.appendChild(p);
+      KART.poles.push(p);
+    }
+  }
+  const bn=kEl('kBanner'); if(bn) bn.classList.remove('on');
   kartRefresh();
   pyLoadWord();
   if(KART.raf) cancelAnimationFrame(KART.raf);
-  KART.raf=requestAnimationFrame(kartLoop);
+  KART.raf = requestAnimationFrame(kartLoop);
+  const h = kEl('hint');
+  if(h) h.innerHTML='敲对拼音，赛车就往前冲！别让对手先到终点';
 }
 
 function kartRefresh(){
   const meP=Math.min(100,KART.me), foeP=Math.min(100,KART.foe);
-  const mp=document.getElementById('kProgress'), fp=document.getElementById('kFoeProg');
-  const mt=document.getElementById('kMeTxt'), ft=document.getElementById('kFoeTxt');
-  const meCar=document.getElementById('kMe'), foeCar=document.getElementById('kFoe');
-  if(mp) mp.style.width=meP+'%';
-  if(fp) fp.style.width=foeP+'%';
-  if(mt) mt.textContent=Math.round(meP)+'%';
-  if(ft) ft.textContent=Math.round(foeP)+'%';
-  if(meCar) meCar.style.left=(10+meP*0.56)+'%';
-  if(foeCar) foeCar.style.left=(30+foeP*0.56)+'%';
+  const mm=kEl('kMarkMe'), mf=kEl('kMarkFoe');
+  const mt=kEl('kMeTxt'), ft=kEl('kFoeTxt');
+  if(mm) mm.style.left = meP+'%';
+  if(mf) mf.style.left = foeP+'%';
+  if(mt) mt.textContent = Math.round(meP)+'%';
+  if(ft) ft.textContent = Math.round(foeP)+'%';
+  const seg=kEl('kSegTxt');
+  if(seg) seg.textContent = '第 '+Math.min(KART.total,KART.done+1)+' / '+KART.total+' 句';
+
+  /* 两车在画面上的位置：玩家固定在 22%，对手按进度差平移 */
+  const meCar=kEl('kMe'), foeCar=kEl('kFoe');
+  if(meCar) meCar.style.left = '24%';
+  if(foeCar){
+    const delta = Math.min(100,KART.foe) - meP;
+    let gap = delta*3.0;      /* 差 10% 进度 ≈ 画面差 30% 宽，才看得出超车 */
+    /* 贴得很近时强制留出车身间距，别两辆车叠在一起 */
+    if(Math.abs(gap) < 26) gap = (delta >= 0 ? 26 : -26);
+    let x = Math.max(1, Math.min(78, 24 + gap));
+    foeCar.style.left = x+'%';
+    foeCar.classList.toggle('pass', delta < -4);
+    foeCar.style.zIndex = (delta < 0) ? '4' : '7';
+  }
 }
 
 function kartLoop(now){
   if(!KART.on) return;
-  KART.raf=requestAnimationFrame(kartLoop);
-  const dt=Math.min(100, now-(KART.last||now)); KART.last=now;
-  /* 对手：每 8.5 秒推进一格（约等于一句话的时间，制造紧迫感） */
-  KART.foeTimer+=dt;
-  if(KART.foeTimer>8500){
-    KART.foeTimer=0;
-    KART.foe=Math.min(100, KART.foe + 100/Math.max(1,PY.list.length));
-    kartRefresh();
-    if(KART.foe>=100 && KART.me<100) kartLose();
+  KART.raf = requestAnimationFrame(kartLoop);
+  const dt = Math.min(120, now-(KART.last||now));
+  KART.last = now;
+
+  /* 车速：基础 1，冲刺时 2.1，然后回落 */
+  const boosting = now < KART.boostUntil;
+  const target = boosting ? 2.1 : 1;
+  KART.spd += (target - KART.spd) * Math.min(1, dt/220);
+
+  KART.scroll += 300 * KART.spd * dt/1000;
+
+  const d1=kEl('kDashes'), d2=kEl('kDashes2'), cb=kEl('kCurb');
+  if(d1) d1.style.backgroundPositionX = (-KART.scroll*1.0)+'px';
+  if(d2) d2.style.backgroundPositionX = (-KART.scroll*0.7)+'px';
+  if(cb) cb.style.backgroundPositionX = (-KART.scroll*1.15)+'px';
+
+  /* 远山城市：最慢的视差 */
+  if(KART.blds && KART.cityW){
+    const span = KART.cityW;
+    const off = KART.scroll*0.10;
+    for(let i=0;i<KART.blds.length;i++){
+      const b=KART.blds[i];
+      let px = (parseFloat(b.dataset.bx) - off) % span;
+      if(px < -140) px += span;
+      b.style.left = px+'px';
+    }
   }
-  /* 打字越快，路面跑得越急 */
-  const road=document.querySelector('#kLayer .kRoad');
-  if(road) road.style.animationDuration = (KART.speed>1.4?0.32:0.55)+'s';
+  /* 路灯：中速视差，绕回右侧 */
+  if(KART.poles){
+    const span = 8*180;
+    const off = KART.scroll*0.62;
+    for(let i=0;i<KART.poles.length;i++){
+      const p=KART.poles[i];
+      let px = (parseFloat(p.dataset.bx) - off) % span;
+      if(px < -60) px += span;
+      p.style.left = px+'px';
+    }
+  }
+
+  /* 终点线：70% 以后从右边逼近，越近越显眼 */
+  const fin=kEl('kFinish');
+  if(fin){
+    if(KART.me > 70){
+      const remain = Math.min(100,100-KART.me);
+      let x = 24 + remain*3.0;
+      x = Math.max(24, Math.min(88, x));
+      fin.style.left = x+'%';
+      fin.classList.add('show');
+      fin.style.opacity = String(Math.min(1, (KART.me-70)/16));
+    } else {
+      fin.classList.remove('show');
+    }
+  }
+  const sn=kEl('kSpdNum');
+  if(sn) sn.textContent = String(Math.round(KART.spd*90 + Math.random()*4));
+
+  /* 对手匀速逼近：一句 ≈ 13 秒，进度条上的对手标记平滑往前爬 */
+  if(KART.foe < 100){
+    KART.foe = Math.min(100, KART.foe + dt * (100 / (KART.total * 13000)));
+    kartRefresh();
+    if(KART.foe >= 100 && KART.me < 100){ kartLose(); return; }
+  }
 }
 
-/* 完成一句：冲刺 + 氮气 + 速度线 */
+/* 每敲对一个字母：一串速度线 + 尾焰喷一下 */
+function kartLetterPulse(){
+  if(!KART.on) return;
+  const st=kEl('kStage');
+  if(!st) return;
+  for(let i=0;i<3;i++){
+    const L=document.createElement('div');
+    L.className='kStream';
+    L.style.left=(48+Math.random()*48)+'%';
+    L.style.top=(38+Math.random()*46)+'%';
+    L.style.width=(44+Math.random()*60)+'px';
+    L.style.opacity='.9';
+    st.appendChild(L);
+    setTimeout(()=>L.remove(),520);
+  }
+  /* 尾焰闪一下 */
+  const me=kEl('kMe');
+  if(me){ me.classList.add('puff'); setTimeout(()=>me.classList.remove('puff'),110); }
+}
+
+/* 跑完一句：氮气冲刺 */
 function kartSentenceDone(){
   if(!KART.on) return;
-  KART.me=Math.min(100, KART.me + 100/Math.max(1,PY.list.length));
-  KART.speed=1.6;
-  setTimeout(()=>{ KART.speed=1; },700);
+  KART.done++;
+  KART.me = Math.min(100, 100*KART.done/KART.total);
+  KART.boostUntil = performance.now() + 900;
   kartRefresh();
-  const me=document.getElementById('kMe'), nt=document.getElementById('kNitro');
-  if(me){ me.classList.remove('boost'); void me.offsetWidth; me.classList.add('boost'); }
-  if(nt){ nt.classList.remove('on'); void nt.offsetWidth; nt.classList.add('on'); }
+  const me=kEl('kMe'), st=kEl('kStage'), bn=kEl('kBanner');
+  if(me){ me.classList.remove('boost'); void me.offsetWidth; me.classList.add('boost');
+          setTimeout(()=>me.classList.remove('boost'), 950); }
+  if(st){ st.classList.remove('shake'); void st.offsetWidth; st.classList.add('shake');
+          setTimeout(()=>st.classList.remove('shake'), 380); }
+  if(bn){ bn.textContent='氮 气 加 速'; bn.classList.remove('on'); void bn.offsetWidth; bn.classList.add('on'); }
   try{ sfx.pop(); }catch(e){}
-  /* 速度线 */
+  /* 一大串速度线 */
   try{
-    const kl=document.getElementById('kLayer');
-    for(let i=0;i<7;i++){
-      const L=document.createElement('div');
-      L.className='kSpeed';
-      L.style.left=(26+Math.random()*40)+'%';
-      L.style.top=(52+Math.random()*34)+'%';
-      L.style.width=(26+Math.random()*30)+'px';
-      kl.appendChild(L);
-      setTimeout(()=>L.remove(),460);
+    for(let i=0;i<14;i++){
+      setTimeout(()=>{
+        if(!KART.on) return;
+        const L=document.createElement('div');
+        L.className='kStream big';
+        L.style.left=(60+Math.random()*40)+'%';
+        L.style.top=(16+Math.random()*74)+'%';
+        L.style.width=(60+Math.random()*70)+'px';
+        st.appendChild(L);
+        setTimeout(()=>L.remove(),560);
+      }, i*26);
     }
   }catch(e){}
-  const h=document.getElementById('hint');
-  if(h) h.innerHTML='<b style="color:#7BE1FF">冲刺！</b> 继续下一句';
-  if(KART.me>=100) kartWin();
+  const h=kEl('hint');
+  if(h) h.innerHTML='<b style="color:#7BE1FF">氮气加速！</b> 继续下一句';
+  if(KART.me >= 100) kartWin();
 }
 
 function kartWin(){
   if(!KART.on) return;
   KART.on=false;
+  PY.alive=false;            /* 冻住输入，避免 pyLoadWord 抢先二次结算 */
   if(KART.raf){ cancelAnimationFrame(KART.raf); KART.raf=0; }
+  const bn=kEl('kBanner');
+  if(bn){ bn.textContent='冲 线'; bn.classList.remove('on'); void bn.offsetWidth; bn.classList.add('on'); }
   try{ sfx.win(); }catch(e){}
-  setTimeout(()=>{ try{ pyFinish(); }catch(e){ levelDone(); } }, 600);
+  setTimeout(()=>{ try{ pyFinish(); }catch(e){ levelDone(); } }, 900);
 }
 
 function kartLose(){
   if(!KART.on) return;
   KART.on=false;
+  PY.alive=false;
   if(KART.raf){ cancelAnimationFrame(KART.raf); KART.raf=0; }
   G.perfect=false;
   try{ sfx.bad(); }catch(e){}
   setTimeout(()=>{
     showModal(`
       <div class="em">🏁</div>
-      <h2>对手先到终点了</h2>
+      <h2>对手先冲线了</h2>
       <p style="color:var(--ink-soft);font-size:15px;line-height:1.8">
-        打字越快，赛车冲得越猛。<br><b>打得再快一点</b>就能反超！
+        打字越快，赛车冲得越猛。<br><b>再快一点</b>就能反超他！
       </p>
-      <div class="row"><div>你跑了 ${Math.round(KART.me)}%</div></div>
+      <div class="row"><div>你跑到了 ${Math.round(KART.me)}%</div></div>
       <div class="btns">
         <button class="btn" onclick="closeModal();startLevel(5)">再跑一次 🏎️</button>
         <button class="btn ghost" onclick="backHome()">回首页</button>
@@ -5588,108 +6285,331 @@ function kartLose(){
   }, 600);
 }
 
-const CFB = { on:false, hp:100, pv:100, raf:0, last:0, timer:0, hits:0 };
+/* ==========================================================
+   第 4 关 · CF 挑战模式（真正的第一人称 BOSS 战）
+   ----------------------------------------------------------
+   · 打字内核仍是拼音（PY / pyPress），但每敲对一个字母 = 打出一发实弹：
+     后坐力 + 枪口火光 + 弹道 + 命中火星 + 弹孔 + 伤害数字。
+   · 整关字母总数决定每发伤害，血条随每一下掉，不是"打完一句掉一格"。
+   · BOSS 每隔几秒蓄力（红光）→ 扑击：屏幕震动 + 红暗角 + 扣生命。
+   · 血量过半进入狂暴：攻击更快更疼，画面变红。
+   ========================================================== */
+const CFB = {
+  on:false, hp:1000, hpMax:1000, perLetter:18, wordCrit:18, pv:100,
+  raf:0, last:0, t:0, atkEvery:5200, atkDmg:7, enraged:false,
+  shots:0, hits:0, busy:false, aim:{x:0,y:0}, emberAt:0, frame:0
+};
+
+function cfbEl(id){ return document.getElementById(id); }
 
 function startCfboss(lv){
   pyStartPool(lv);
   show('play');
   const pr = document.querySelector('.prompt');
   if(pr) pr.classList.add('bMode');
-  const bl = document.getElementById('bLayer');
-  if(bl) bl.style.display='block';
-  CFB.on=true; CFB.hp=100; CFB.pv=100; CFB.hits=0;
-  CFB.last=performance.now(); CFB.timer=0;
+  const st = cfbEl('bStage');
+  if(st){ st.style.display='block'; st.classList.remove('enraged','shake'); }
+  const bw = cfbEl('bBossWrap');
+  if(bw) bw.className = 'bBossWrap';
+  const au = cfbEl('bAura'); if(au) au.classList.remove('charging');
+  const wd = cfbEl('bWound'); if(wd) wd.innerHTML='';
+  const bn = cfbEl('bBanner'); if(bn) bn.classList.remove('on');
+  const wm = cfbEl('bWarn'); if(wm) wm.classList.remove('on');
+  const em = cfbEl('bEmbers'); if(em) em.innerHTML='';
+
+  /* 每发伤害 = 全关字母总数分摊（85%），剩下 15% 作为"整词暴击"补刀，
+     这样血条正好在最后一个词打完时归零，不会提前结算。 */
+  let letters = 0;
+  (PY.list||[]).forEach(it=>{ letters += (it.type||it.py||'').length; });
+  const words = Math.max(1, (PY.list||[]).length);
+  CFB.hpMax = 1000;
+  CFB.perLetter = CFB.hpMax * 0.85 / Math.max(1, letters);
+  CFB.wordCrit  = CFB.hpMax * 0.15 / words;
+  CFB.hp = CFB.hpMax;
+  CFB.pv = 100;
+  CFB.on = true; CFB.enraged = false;
+  CFB.atkEvery = 5200; CFB.atkDmg = 7;
+  CFB.t = 0; CFB.last = performance.now();
+  CFB.shots = 0; CFB.hits = 0; CFB.busy = false; CFB.emberAt = 0; CFB.frame = 0;
+  G.perfect = true;
   cfbRefresh();
   pyLoadWord();
   if(CFB.raf) cancelAnimationFrame(CFB.raf);
-  CFB.raf=requestAnimationFrame(cfbLoop);
+  CFB.raf = requestAnimationFrame(cfbLoop);
+  requestAnimationFrame(()=>{ cfbAim(); });
+  const h = cfbEl('hint');
+  if(h) h.innerHTML = '敲对拼音字母就开枪，把血条打空！';
+}
+
+/* 准星对准 BOSS 胸口 */
+function cfbAim(){
+  const st=cfbEl('bStage'), boss=cfbEl('bBoss'), cr=cfbEl('bCross');
+  if(!st||!boss||!cr) return;
+  const sr=st.getBoundingClientRect(), br=boss.getBoundingClientRect();
+  const x = br.left-sr.left + br.width*0.50;
+  const y = br.top-sr.top  + br.height*0.36;
+  CFB.aim = {x:x, y:y};
+  cr.style.left = x+'px';
+  cr.style.top  = y+'px';
 }
 
 function cfbRefresh(){
-  const h=document.getElementById('bHpFill'), n=document.getElementById('bHpNum');
-  const pf=document.getElementById('bPvFill'), pn=document.getElementById('bPvNum');
-  const pw=document.getElementById('bPvWrap');
-  if(h) h.style.width=Math.max(0,CFB.hp)+'%';
-  if(n) n.textContent=Math.round(Math.max(0,CFB.hp))+'%';
-  if(pf) pf.style.width=Math.max(0,CFB.pv)+'%';
-  if(pn) pn.textContent=String(Math.round(Math.max(0,CFB.pv)));
+  const pct = Math.max(0, CFB.hp) / CFB.hpMax * 100;
+  const hf=cfbEl('bHpFill'), hn=cfbEl('bHpNum');
+  const pf=cfbEl('bPvFill'), pn=cfbEl('bPvNum'), pw=cfbEl('bPlayerHud');
+  if(hf) hf.style.width = pct.toFixed(2)+'%';
+  if(hn) hn.textContent = Math.round(pct)+'%';
+  if(pf) pf.style.width = Math.max(0,CFB.pv)+'%';
+  if(pn) pn.textContent = String(Math.round(Math.max(0,CFB.pv)));
   if(pw) pw.classList.toggle('low', CFB.pv<=35);
 }
 
 function cfbLoop(now){
   if(!CFB.on) return;
-  CFB.raf=requestAnimationFrame(cfbLoop);
-  const dt=Math.min(90, now-(CFB.last||now));
-  CFB.last=now;
-  CFB.timer+=dt;
-  if(CFB.timer>5200){ CFB.timer=0; cfbBossAttack(); }
+  CFB.raf = requestAnimationFrame(cfbLoop);
+  const dt = Math.min(120, now-(CFB.last||now));
+  CFB.last = now;
+  CFB.t += dt;
+  if(CFB.t > CFB.atkEvery){ CFB.t = 0; cfbBossAttack(); }
+  if(now - CFB.emberAt > 300){ CFB.emberAt = now; cfbEmber(); }
+  /* 血量过半 → 狂暴 */
+  if(!CFB.enraged && CFB.hp <= CFB.hpMax*0.5) cfbEnrage();
+  /* 呼吸动画会让包围盒轻微变化，隔几帧重对准星 */
+  if((CFB.frame = (CFB.frame+1) % 8) === 0) cfbAim();
 }
 
-/* BOSS 反击：前扑 + 红闪 + 玩家掉血 */
-function cfbBossAttack(){
+/* 飘扬的火星（氛围） */
+function cfbEmber(){
+  const box = cfbEl('bEmbers');
+  if(!box || box.children.length > 16) return;
+  const e = document.createElement('div');
+  e.className = 'bEmber';
+  e.style.left = (8 + Math.random()*84) + '%';
+  e.style.bottom = (2 + Math.random()*18) + '%';
+  const d = 1.6 + Math.random()*1.8;
+  e.style.animationDuration = d+'s';
+  e.style.width = e.style.height = (2 + Math.random()*2.4)+'px';
+  box.appendChild(e);
+  setTimeout(()=>e.remove(), d*1000+80);
+}
+
+/* ============ 开一枪：后坐力 + 火光 + 弹道 + 弹壳 ============ */
+function cfbShotFx(hit){
+  const st=cfbEl('bStage'), gun=cfbEl('bGun');
+  if(!st||!gun) return;
+  const sr = st.getBoundingClientRect();
+  const gr = gun.getBoundingClientRect();
+  /* 枪口 = 旋转后枪图左侧 */
+  const mx = gr.left - sr.left + gr.width*0.045;
+  const my = gr.top  - sr.top  + gr.height*0.22;
+  cfbAim();
+  const ax = (CFB.aim.x||200) + (Math.random()-.5)*26;
+  const ay = (CFB.aim.y||140) + (Math.random()-.5)*30;
+
+  const mz=cfbEl('bMuzzle');
+  if(mz){ mz.style.left=mx+'px'; mz.style.top=my+'px';
+          mz.classList.remove('on'); void mz.offsetWidth; mz.classList.add('on'); }
+  gun.classList.add('kick');
+  setTimeout(()=>gun.classList.remove('kick'), 85);
+  const cr=cfbEl('bCross');
+  if(cr){ cr.classList.add('fire'); setTimeout(()=>cr.classList.remove('fire'),85); }
+
+  const tr=cfbEl('bTracer');
+  if(tr){
+    const dx=ax-mx, dy=ay-my, len=Math.hypot(dx,dy);
+    tr.style.left=mx+'px'; tr.style.top=my+'px'; tr.style.width=len+'px';
+    tr.style.setProperty('--ang', Math.atan2(dy,dx)+'rad');
+    tr.classList.remove('on'); void tr.offsetWidth; tr.classList.add('on');
+  }
+  /* 弹壳 */
+  try{
+    const sh=document.createElement('div');
+    sh.className='zShell';
+    sh.style.left=(mx+18)+'px'; sh.style.top=(my-6)+'px';
+    sh.style.zIndex='9';
+    st.appendChild(sh);
+    sh.animate([{transform:'translate(0,0) rotate(0)',opacity:1},
+                {transform:'translate('+(16+Math.random()*22)+'px,'+(-18-Math.random()*14)+'px) rotate(400deg)',opacity:0}],
+               {duration:500,easing:'ease-out'}).onfinish=()=>sh.remove();
+  }catch(e){}
+  if(hit) setTimeout(()=>cfbImpact(ax, ay), 55);
+}
+
+/* ============ 命中：火星 + 弹孔 + 命中标记 + 伤害数字 ============ */
+function cfbImpact(x, y, dmg, crit){
+  const st=cfbEl('bStage');
+  if(!st) return;
+  const sp=cfbEl('bSpark');
+  if(sp){ sp.style.left=x+'px'; sp.style.top=y+'px';
+          sp.classList.remove('on'); void sp.offsetWidth; sp.classList.add('on'); }
+  const hm=cfbEl('bHitMark');
+  if(hm){ hm.style.left=x+'px'; hm.style.top=y+'px';
+          hm.classList.remove('on'); void hm.offsetWidth; hm.classList.add('on'); }
+  /* 弹孔（落在 BOSS 身上，跟着呼吸一起动） */
+  try{
+    const wd=cfbEl('bWound'), bw=cfbEl('bBossWrap');
+    if(wd && bw){
+      const wr=bw.getBoundingClientRect(), sr=st.getBoundingClientRect();
+      const px=(x-(wr.left-sr.left))/wr.width*100;
+      const py=(y-(wr.top-sr.top))/wr.height*100;
+      if(px>4 && px<96 && py>4 && py<96){
+        const hole=document.createElement('div');
+        hole.className='bHole';
+        hole.style.left=px+'%'; hole.style.top=py+'%';
+        wd.appendChild(hole);
+        while(wd.children.length>10) wd.firstChild.remove();
+      }
+    }
+  }catch(e){}
+  /* 火星 + 血花粒子（绝对视口坐标） */
+  try{
+    const sr=st.getBoundingClientRect();
+    FX.burst(sr.left+x, sr.top+y, 14,
+      { speed:280, speed2:60, arc:Math.PI*2, g:620, drag:.9, life:.42, size:3,
+        colors:['#FFF6C0','#FFC24A','#FF6A2E','#FFFFFF'] });
+    FX.burst(sr.left+x, sr.top+y, 8,
+      { speed:180, speed2:40, arc:Math.PI*2, g:700, drag:.92, life:.5, size:3.4,
+        colors:['#8B1A0A','#C0281A','#5A0E06'] });
+  }catch(e){}
+  /* 伤害数字 */
+  if(dmg){
+    const d=document.createElement('div');
+    d.className = 'bDmg' + (crit?' crit':'');
+    d.textContent = '-' + Math.round(dmg);
+    d.style.left = Math.max(24, x+26)+'px';
+    d.style.top  = Math.max(60, y-26)+'px';
+    st.appendChild(d);
+    setTimeout(()=>d.remove(), 820);
+  }
+}
+
+/* ============ 敲对一个字母 = 开一枪 ============ */
+function cfbLetterHit(){
   if(!CFB.on) return;
-  const b=document.getElementById('bBoss'), bl=document.getElementById('bLayer');
-  if(b){ b.classList.remove('attack'); void b.offsetWidth; b.classList.add('attack');
-         setTimeout(()=>b.classList.remove('attack'),520); }
-  if(bl){ bl.classList.remove('hurtS'); void bl.offsetWidth; bl.classList.add('hurtS');
-          setTimeout(()=>bl.classList.remove('hurtS'),470); }
-  CFB.pv=Math.max(0,CFB.pv-7);
+  CFB.shots++;
+  CFB.hits++;
+  const dmg = CFB.perLetter;
+  CFB.hp = Math.max(1, CFB.hp - dmg);   /* 留 1 点，由整词暴击补刀 */
   cfbRefresh();
-  try{ sfx.bad(); }catch(e){}
-  const h=document.getElementById('hint');
-  if(h) h.innerHTML='<b style="color:#FF6B6B">BOSS 反击！生命 -7</b>　继续打拼音！';
-  if(CFB.pv<=0) cfbLose();
+  cfbShotFx(true);
+  /* BOSS 轻微后仰 */
+  const bw=cfbEl('bBossWrap');
+  if(bw){ bw.classList.remove('hit'); void bw.offsetWidth; bw.classList.add('hit'); }
+  try{ sfx.shoot(); }catch(e){}
+  try{ bumpCombo(true); }catch(e){}
 }
 
-/* 打完一个词：开枪命中 BOSS */
+/* ============ 整词打完：暴击补刀 ============ */
 function bossTakeHit(){
   if(!CFB.on) return;
-  CFB.hits++;
-  const total=Math.max(1,PY.list.length);
-  CFB.hp=Math.max(0, CFB.hp - 100/total);
+  CFB.hp = Math.max(0, CFB.hp - CFB.wordCrit);
   cfbRefresh();
-  const b=document.getElementById('bBoss'), fl=document.getElementById('bFlash');
-  const bl=document.getElementById('bLayer');
+  cfbShotFx(true);
+  const bw=cfbEl('bBossWrap');
+  if(bw){ bw.classList.remove('hit'); void bw.offsetWidth; bw.classList.add('hit'); }
+  /* 暴击数字 + 横幅 */
+  setTimeout(()=>{
+    cfbAim();
+    cfbImpact((CFB.aim.x||200)+18, (CFB.aim.y||140)-8, CFB.wordCrit, true);
+  }, 40);
+  CFB.words = (CFB.words||0) + 1;
+  if(CFB.words % 3 === 0){
+    const bn=cfbEl('bBanner');
+    if(bn){ bn.textContent='暴 击'; bn.classList.remove('on'); void bn.offsetWidth; bn.classList.add('on'); }
+  }
   try{ sfx.metalBoom(); }catch(e){}
-  if(fl){ fl.classList.remove('on'); void fl.offsetWidth; fl.classList.add('on'); }
-  if(b){ b.classList.remove('hit'); void b.offsetWidth; b.classList.add('hit');
-         setTimeout(()=>b.classList.remove('hit'),320); }
-  /* 飘伤害数字 */
-  try{
-    const r=b.getBoundingClientRect(), lr=bl.getBoundingClientRect();
-    const d=document.createElement('div');
-    d.className='bDmg'; d.textContent='-'+Math.round(100/total)+'%';
-    d.style.left=Math.max(20, r.left-lr.left+30)+'px';
-    d.style.top=Math.max(60, r.top-lr.top+40)+'px';
-    bl.appendChild(d); setTimeout(()=>d.remove(),820);
-  }catch(e){}
-  if(CFB.hp<=0){ cfbWin(); }
+  if(CFB.hp<=0) cfbWin();
 }
 
+/* ============ BOSS 蓄力 → 扑击 ============ */
+function cfbBossAttack(){
+  if(!CFB.on || CFB.busy) return;
+  CFB.busy = true;
+  const au=cfbEl('bAura'), wm=cfbEl('bWarn');
+  if(au){ au.classList.remove('charging'); void au.offsetWidth; au.classList.add('charging'); }
+  if(wm){ wm.textContent = CFB.enraged ? '⚠ 狂暴扑击！' : '⚠ 暴君蓄力！';
+          wm.classList.remove('on'); void wm.offsetWidth; wm.classList.add('on'); }
+  try{ sfx.bad(); }catch(e){}
+  setTimeout(()=>{
+    if(!CFB.on) return;
+    const bw=cfbEl('bBossWrap'), st=cfbEl('bStage'), vg=cfbEl('bVignette');
+    if(bw){ bw.classList.remove('lunge'); void bw.offsetWidth; bw.classList.add('lunge'); }
+    if(st){ st.classList.remove('shake'); void st.offsetWidth; st.classList.add('shake');
+            setTimeout(()=>st.classList.remove('shake'), 440); }
+    if(vg){ vg.classList.remove('hurt'); void vg.offsetWidth; vg.classList.add('hurt'); }
+    const cw=lEl('lClaw');
+    if(cw){ cw.classList.remove('on'); void cw.offsetWidth; cw.classList.add('on'); }
+    CFB.pv = Math.max(0, CFB.pv - CFB.atkDmg);
+    cfbRefresh();
+    /* 玩家受伤飘字 */
+    try{
+      const st2=cfbEl('bStage'), sr=st2.getBoundingClientRect();
+      const d=document.createElement('div');
+      d.className='bDmg'; d.style.color='#FF5C5C'; d.style.fontSize='18px';
+      d.textContent='-'+CFB.atkDmg+' HP';
+      d.style.left='16px'; d.style.top='58px';
+      st2.appendChild(d); setTimeout(()=>d.remove(),820);
+      FX.burst(sr.left+70, sr.top+sr.height*0.5, 14,
+        {speed:220,speed2:50,arc:Math.PI*2,g:520,drag:.92,life:.5,size:3,
+         colors:['#FF4B4B','#FF9A9A','#8B0000']});
+    }catch(e){}
+    setTimeout(()=>{ if(bw) bw.classList.remove('lunge'); CFB.busy=false; }, 540);
+    if(CFB.pv<=0) cfbLose();
+  }, 720);
+}
+
+/* ============ 狂暴 ============ */
+function cfbEnrage(){
+  CFB.enraged = true;
+  CFB.atkEvery = 3600;
+  CFB.atkDmg = 9;
+  const st=cfbEl('bStage'), bw=cfbEl('bBossWrap'), tip=cfbEl('bPhaseTip');
+  if(st) st.classList.add('enraged');
+  if(bw) bw.classList.add('enrage');
+  if(tip) tip.textContent = '⚠ 狂暴状态：攻击更快更狠，快打！';
+  const bn=cfbEl('bBanner');
+  if(bn){ bn.textContent='狂 暴'; bn.classList.remove('on'); void bn.offsetWidth; bn.classList.add('on'); }
+  try{ sfx.boom(); }catch(e){}
+}
+
+/* ============ 击倒 ============ */
 function cfbWin(){
   if(!CFB.on) return;
-  CFB.on=false;
+  CFB.on = false;
+  PY.alive = false;          /* 冻住输入，防止 pyLoadWord 抢在动画前二次结算 */
   if(CFB.raf){ cancelAnimationFrame(CFB.raf); CFB.raf=0; }
-  const b=document.getElementById('bBoss');
-  if(b) b.style.animation='zDeadFx .6s ease-in forwards';
+  const bw=cfbEl('bBossWrap');
+  if(bw){ bw.classList.remove('hit','enrage'); bw.classList.add('dead'); }
+  const bn=cfbEl('bBanner');
+  if(bn){ bn.textContent='击 倒'; bn.classList.remove('on'); void bn.offsetWidth; bn.classList.add('on'); }
+  const cr=cfbEl('bCross'); if(cr) cr.style.opacity='0';
   try{ sfx.win(); }catch(e){}
-  setTimeout(()=>{ try{ pyFinish(); }catch(e){ levelDone(); } }, 700);
+  try{
+    const st=cfbEl('bStage'), sr=st.getBoundingClientRect();
+    const bx=sr.left+sr.width*0.70, by=sr.top+sr.height*0.42;
+    FX.burst(bx,by,42,{speed:430,speed2:90,arc:Math.PI*2,g:300,drag:.92,life:.95,size:5,
+      colors:['#FFF6C0','#FFC24A','#FF6A1E','#FFFFFF','#8B1A0A']});
+    FX.ring(bx,by,{r0:20,r1:270,life:.72,color:'rgba(255,180,80,.9)',width:7});
+  }catch(e){}
+  setTimeout(()=>{ try{ pyFinish(); }catch(e){ levelDone(); } }, 1000);
 }
 
+/* ============ 被打倒 ============ */
 function cfbLose(){
   if(!CFB.on) return;
-  CFB.on=false;
+  CFB.on = false;
+  PY.alive = false;
   if(CFB.raf){ cancelAnimationFrame(CFB.raf); CFB.raf=0; }
-  G.perfect=false;
+  G.perfect = false;
   try{ sfx.bad(); }catch(e){}
   setTimeout(()=>{
     showModal(`
       <div class="em">☣️</div>
       <h2>你被暴君打倒了</h2>
       <p style="color:var(--ink-soft);font-size:15px;line-height:1.8">
-        BOSS 每 5 秒反击一次。<br><b>打得更快</b>，就能在它打倒你之前干掉它。
+        它每隔几秒就会蓄力扑过来。<br><b>打得更快</b>，就能在它打倒你之前干掉它。
       </p>
-      <div class="row"><div>已打掉 BOSS ${Math.round(100-CFB.hp)}% 的血</div></div>
+      <div class="row"><div>已打掉暴君 ${Math.round(100-CFB.hp/CFB.hpMax*100)}% 的血</div></div>
       <div class="btns">
         <button class="btn" onclick="closeModal();startLevel(4)">再打一次 🔫</button>
         <button class="btn ghost" onclick="backHome()">回首页</button>
@@ -5888,20 +6808,27 @@ function pyPress(raw){
   }
   PY.hits++;
   PY.pos++;
-  bumpCombo(true);
-  sfx.good(PY.pos % 6);
-  fairyDustKey(want, 6);
+  /* 第 4 关 · 生化暴君：每敲对一个字母就真的开一枪 */
+  if(G.lvl && G.lvl.mode === 'cfboss'){ cfbLetterHit(); }
+  else {
+    bumpCombo(true);
+    sfx.good(PY.pos % 6);
+    fairyDustKey(want, 6);
+    if(G.lvl && G.lvl.mode === 'kart') kartLetterPulse();
+  }
   /* Canvas：拼音字母敲对也炸一撮小星星 */
-  try{
-    const kb = document.querySelector('.key[data-k="' + CSS.escape(want === ' ' ? 'SP' : want) + '"]');
-    if(kb){
-      const r = kb.getBoundingClientRect();
-      const v = { x: r.left + r.width/2, y: r.top + r.height/2 };
-      FX.burst(v.x, v.y, 7, { speed:200, speed2:40, arc:Math.PI*2, g:400, drag:.92,
-        life:.46, size:2.6, colors:['#FFD36E','#8FB8FF','#FF9BC0'] });
-    }
-    praiseNearKey(want);
-  }catch(e){}
+  if(!(G.lvl && G.lvl.mode === 'cfboss')){
+    try{
+      const kb = document.querySelector('.key[data-k="' + CSS.escape(want === ' ' ? 'SP' : want) + '"]');
+      if(kb){
+        const r = kb.getBoundingClientRect();
+        const v = { x: r.left + r.width/2, y: r.top + r.height/2 };
+        FX.burst(v.x, v.y, 7, { speed:200, speed2:40, arc:Math.PI*2, g:400, drag:.92,
+          life:.46, size:2.6, colors:['#FFD36E','#8FB8FF','#FF9BC0'] });
+      }
+      praiseNearKey(want);
+    }catch(e){}
+  }
   /* 目标区局部刷新（只改新位置，避免整页重绘闪） */
   const kids = document.getElementById('target').children;
   if(kids[PY.pos-1]){ kids[PY.pos-1].classList.remove('cur'); kids[PY.pos-1].classList.add('ok'); }
@@ -5925,7 +6852,7 @@ function pyPress(raw){
   /* 当前词打完 → 下一个 */
   if(PY.pos >= PY.chars.length){
     sfx.check();
-    pyStarBurst();
+    if(!(G.lvl && (G.lvl.mode === 'cfboss' || G.lvl.mode === 'kart'))) pyStarBurst();
     /* 句子关：整句拼完的画面要"停一拍"让孩子看清成果，
        同时迷你跳舞也在跳，这段时间锁住输入，避免连打把画面冲掉 */
     if(G.lvl && G.lvl.mode === 'pysent'){
@@ -9082,6 +10009,9 @@ function show(id){
 }
 
 document.addEventListener('keydown', e=>{
+  /* 账号弹窗里的输入框：别把邮箱/验证码当成游戏按键 */
+  const t = e.target;
+  if(t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
   if(e.key==='Escape'){
     if(document.getElementById('mask').classList.contains('on')) return;
     backHome(); return;
@@ -9286,6 +10216,344 @@ function applyHeroArt(){
     }
   }
 }
+
+
+/* =========================================================
+   云服务：账号（手机号 / 邮箱验证码）+ 进度云端同步
+   ---------------------------------------------------------
+   · publicConfig 来自 workbuddy_cloud_service，可公开在前端
+   · SDK 走 CDN <script>，加载失败时游戏照常玩，只是没有云存档
+   · 登录后：云端进度与本机进度按「取大」合并，再回写云端
+   · 之后每次 store() 都会防抖推一次云端
+   ========================================================= */
+const CLOUD_CFG = {
+  endpoint: 'https://typing-adventure-13087.app.workbuddy.host',
+  oauthRelayBaseUrl: 'https://www.workbuddy.cn/v2/as/genie-baas/oauth',
+  publishableKey: 'wbpk_JydKA5bmbjyAh32PASt47L_zODIgnxA1X2DBZ35wdsUqFrPBtU0DJYU'
+};
+var CLOUD = { sdkLoaded:false, ready:false, client:null, user:null, label:'',
+                mode:'phone', pending:null, lastId:'', syncTimer:0, syncing:false,
+                lastSync:0, err:'', cdTimer:0 };
+
+function esc(v){
+  return String(v==null?'':v).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ---------- 加载 SDK（异步，不阻塞游戏） ---------- */
+function cloudBoot(){
+  const s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/@tencent-ai/workbuddy-cloud-sdk@dev/lib/index.global.js';
+  s.onload = ()=>{
+    CLOUD.sdkLoaded = true;
+    try{
+      if(!window.WorkBuddyCloud) throw new Error('sdk global missing');
+      CLOUD.client = window.WorkBuddyCloud.createWorkBuddyCloud({
+        endpoint: CLOUD_CFG.endpoint,
+        oauthRelayBaseUrl: CLOUD_CFG.oauthRelayBaseUrl,
+        publishableKey: CLOUD_CFG.publishableKey
+      });
+      CLOUD.ready = true;
+      cloudRestore();
+    }catch(e){
+      CLOUD.err = '云服务初始化失败';
+      cloudPaint();
+    }
+  };
+  s.onerror = ()=>{ CLOUD.err = '云服务加载失败'; cloudPaint(); };
+  document.head.appendChild(s);
+}
+
+/* ---------- 恢复会话 + 拉取云端进度 ---------- */
+async function cloudRestore(){
+  try{
+    const { data: session, error } = await CLOUD.client.auth.getSession();
+    if(error) throw error;
+    if(session && session.user){
+      CLOUD.user = session.user;
+      CLOUD.label = session.user.name || '我的账号';
+      await cloudPull();
+    }
+  }catch(e){
+    CLOUD.err = '会话读取失败';
+  }
+  cloudPaint();
+}
+
+/* ---------- 拉取并合并 ---------- */
+async function cloudPull(silent){
+  if(!CLOUD.ready || !CLOUD.user) return false;
+  CLOUD.syncing = true; cloudPaint();
+  try{
+    const { data, error } = await CLOUD.client.database
+      .from('game_progress').select('progress, updated_at').limit(1).maybeSingle();
+    if(error) throw error;
+    if(data && data.progress){
+      const merged = mergeProgress(save, data.progress);
+      Object.keys(merged).forEach(k=>{ save[k] = merged[k]; });
+      try{ localStorage.setItem(SKEY, JSON.stringify(save)); }catch(e){}
+      if(typeof renderHome === 'function') renderHome();
+      if(typeof hudChipUpdate === 'function') hudChipUpdate();
+      if(!silent) cloudToast('云端进度已合并到本机');
+    }
+    await cloudPush();
+    CLOUD.lastSync = Date.now();
+    return true;
+  }catch(e){
+    CLOUD.err = '读取云端进度失败';
+    return false;
+  }finally{
+    CLOUD.syncing = false; cloudPaint();
+  }
+}
+
+/* ---------- 合并规则：星星取大、贴纸并集、天数取大 ---------- */
+function mergeProgress(local, remote){
+  const a = JSON.parse(JSON.stringify(local || {}));
+  const b = remote || {};
+  a.stars = a.stars || {};
+  Object.keys(b.stars || {}).forEach(k=>{
+    a.stars[k] = Math.max(Number(a.stars[k]) || 0, Number(b.stars[k]) || 0);
+  });
+  a.best = a.best || {};
+  Object.keys(b.best || {}).forEach(k=>{
+    a.best[k] = Math.max(Number(a.best[k]) || 0, Number(b.best[k]) || 0);
+  });
+  a.keyMiss = a.keyMiss || {};
+  Object.keys(b.keyMiss || {}).forEach(k=>{
+    a.keyMiss[k] = Math.max(Number(a.keyMiss[k]) || 0, Number(b.keyMiss[k]) || 0);
+  });
+  const st = new Set([...(a.stickers || []), ...(b.stickers || [])]);
+  a.stickers = [...st];
+  a.magic = Math.max(Number(a.magic) || 0, Number(b.magic) || 0);
+  a.streak = Math.max(Number(a.streak) || 0, Number(b.streak) || 0);
+  a.totalStars = Math.max(Number(a.totalStars) || 0, Number(b.totalStars) || 0);
+  if((b.lastDay || '') > (a.lastDay || '')) a.lastDay = b.lastDay;
+  /* 日志只保留本机的，避免云端越滚越大 */
+  return a;
+}
+
+/* ---------- 推送（防抖） ---------- */
+function cloudQueuePush(){
+  if(!CLOUD || !CLOUD.ready || !CLOUD.user) return;
+  clearTimeout(CLOUD.syncTimer);
+  CLOUD.syncTimer = setTimeout(()=>{ cloudPush(true); }, 1200);
+}
+
+async function cloudPush(quiet){
+  if(!CLOUD || !CLOUD.ready || !CLOUD.user) return false;
+  const payload = {
+    owner_name: CLOUD.user.name || null,
+    progress: {
+      stars: save.stars || {}, best: save.best || {}, stickers: save.stickers || [],
+      magic: save.magic || 0, streak: save.streak || 0, lastDay: save.lastDay || '',
+      totalStars: save.totalStars || 0, keyMiss: save.keyMiss || {}, sound: save.sound !== false
+    },
+    updated_at: new Date().toISOString()
+  };
+  try{
+    const { error } = await CLOUD.client.database
+      .from('game_progress').upsert(payload, { onConflict: 'owner_id' });
+    if(error) throw error;
+    CLOUD.lastSync = Date.now();
+    if(!quiet) cloudToast('进度已保存到云端');
+    cloudPaint();
+    return true;
+  }catch(e){
+    CLOUD.err = '保存到云端失败';
+    cloudPaint();
+    return false;
+  }
+}
+
+/* ---------- 登录 / 注册 ---------- */
+function accTab(m){
+  CLOUD.mode = m; CLOUD.pending = null;
+  accOpen();
+}
+
+function accOpen(){
+  if(CLOUD.user){
+    showModal(`
+      <h2>云端存档已开启</h2>
+      <div class="accWho">${esc(CLOUD.label)}<span class="accTag">已同步</span></div>
+      <p class="accTip">
+        星星、贴纸、连击天数已存到云端。<br>
+        换一台电脑登录同一个账号，进度会自动接上。<br>
+        退出登录也不会删掉这台电脑上的进度。
+      </p>
+      <div class="btns">
+        <button class="btn ghost" onclick="closeModal()">关闭</button>
+        <button class="btn" onclick="accLogout()">退出登录</button>
+      </div>`);
+    return;
+  }
+  if(!CLOUD.ready){
+    showModal(`
+      <h2>云服务还没准备好</h2>
+      <p style="color:var(--ink-soft);font-size:14px;line-height:1.9">
+        ${esc(CLOUD.err || '正在连接云端，请稍等几秒再点一次。')}
+      </p>
+      <div class="btns"><button class="btn ghost" onclick="closeModal()">知道了</button></div>`);
+    return;
+  }
+  const phone = CLOUD.mode === 'phone';
+  showModal(`
+    <h2>登录 / 注册</h2>
+    <p style="color:var(--ink-soft);font-size:14px;margin:0;line-height:1.75">
+      <b>不登录也能一直玩</b>，进度存在这台电脑上。<br>
+      想换电脑接着玩、或者怕清缓存丢掉进度，再登录就行。
+    </p>
+    <div class="accTabs">
+      <button class="${phone?'on':''}" onclick="accTab('phone')">手机号</button>
+      <button class="${phone?'':'on'}" onclick="accTab('email')">邮箱</button>
+    </div>
+    <div class="accRow">
+      <input id="accId" type="text" ${phone?'inputmode="numeric"':''}
+             placeholder="${phone?'请输入 11 位手机号':'请输入邮箱地址'}"
+             value="${esc(CLOUD.lastId)}" autocomplete="off">
+      <button id="accSend" onclick="accSend()">获取验证码</button>
+    </div>
+    <div class="accRow">
+      <input id="accCode" type="text" inputmode="numeric" maxlength="6"
+             placeholder="6 位验证码" autocomplete="one-time-code">
+      <button id="accLogin" onclick="accLogin()">登录 / 注册</button>
+    </div>
+    <div class="accMsg" id="accMsg"></div>
+    <p class="accTip">第一次登录会自动创建账号，并把这台电脑上的进度一起带到云端。<br>验证码 5 分钟内有效。</p>
+    <div class="btns"><button class="btn ghost" onclick="closeModal()">稍后再说</button></div>`);
+}
+
+function accMsg(txt, ok){
+  const el = document.getElementById('accMsg');
+  if(!el) return;
+  el.textContent = txt || '';
+  el.className = 'accMsg' + (ok ? ' ok' : '');
+}
+
+async function accSend(){
+  if(!CLOUD.ready) return;
+  const el = document.getElementById('accId');
+  const id = (el && el.value || '').trim();
+  const btn = document.getElementById('accSend');
+  if(CLOUD.mode === 'phone'){
+    if(!/^1\d{10}$/.test(id)){ accMsg('请输入正确的 11 位手机号'); return; }
+  }else{
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(id)){ accMsg('请输入正确的邮箱地址'); return; }
+  }
+  accMsg('发送中…');
+  if(btn){ btn.disabled = true; }
+  try{
+    const arg = CLOUD.mode === 'phone' ? { phone: id } : { email: id };
+    const r = await CLOUD.client.auth.sendOtp(arg);
+    if(r.error){ throw r.error; }
+    CLOUD.pending = {
+      type: CLOUD.mode, value: id,
+      verificationId: r.data.verificationId,
+      isExistingUser: r.data.isExistingUser
+    };
+    CLOUD.lastId = id;
+    accMsg('验证码已发送，请查收', true);
+    let left = 60;
+    clearInterval(CLOUD.cdTimer);
+    CLOUD.cdTimer = setInterval(()=>{
+      left--;
+      const b = document.getElementById('accSend');
+      if(!b){ clearInterval(CLOUD.cdTimer); return; }
+      if(left <= 0){ clearInterval(CLOUD.cdTimer); b.disabled = false; b.textContent = '重新获取'; }
+      else { b.disabled = true; b.textContent = left + ' 秒后重发'; }
+    }, 1000);
+  }catch(e){
+    if(btn){ btn.disabled = false; }
+    accMsg(friendlyErr(e));
+  }
+}
+
+async function accLogin(){
+  const p = CLOUD.pending;
+  if(!p){ accMsg('请先点「获取验证码」'); return; }
+  const el = document.getElementById('accCode');
+  const code = (el && el.value || '').trim();
+  if(!/^\d{4,8}$/.test(code)){ accMsg('请输入收到的验证码'); return; }
+  accMsg('登录中…');
+  try{
+    const arg = {
+      verificationId: p.verificationId,
+      isExistingUser: p.isExistingUser,
+      token: code
+    };
+    if(p.type === 'phone') arg.phone = p.value; else arg.email = p.value;
+    const r = await CLOUD.client.auth.verifyOtp(arg);
+    if(r.error){ throw r.error; }
+    CLOUD.user = r.data.user;
+    CLOUD.label = (r.data.user && r.data.user.name) || maskId(p.value);
+    CLOUD.pending = null;
+    accMsg('登录成功，正在合并进度…', true);
+    await cloudPull(true);
+    cloudPaint();
+    setTimeout(()=>{ accOpen(); }, 500);
+  }catch(e){
+    accMsg(friendlyErr(e));
+  }
+}
+
+async function accLogout(){
+  try{ await CLOUD.client.auth.signOut(); }catch(e){}
+  CLOUD.user = null; CLOUD.label = ''; CLOUD.pending = null; CLOUD.lastSync = 0;
+  cloudPaint();
+  closeModal();
+  cloudToast('已退出，本机进度保留');
+}
+
+function maskId(v){
+  const s2 = String(v || '');
+  if(s2.indexOf('@') > 0){
+    const [a, b] = s2.split('@');
+    return a.slice(0,2) + '***@' + b;
+  }
+  return s2.length >= 7 ? s2.slice(0,3) + '****' + s2.slice(-4) : s2;
+}
+
+function friendlyErr(e){
+  const m = (e && (e.message || e.error_description)) || '操作失败，请重试';
+  if(/验证码|verification|invalid_otp|token/i.test(m)) return '验证码不对或已过期，请重新获取';
+  if(/频率|too many|429/i.test(m)) return '操作太频繁，请稍后再试';
+  if(/network|Failed to fetch/i.test(m)) return '网络不太好，请检查网络后重试';
+  return m;
+}
+
+/* ---------- 状态刷新 ---------- */
+function cloudPaint(){
+  const label = CLOUD.user ? ('☁ ' + (CLOUD.label || '已登录')) : '👤 登录';
+  const a = document.getElementById('accChip');
+  const b = document.getElementById('hudAcc');
+  if(a) a.textContent = label;
+  if(b) b.textContent = label;
+}
+
+let _cloudToastEl = null;
+function cloudToast(txt){
+  if(!_cloudToastEl){
+    _cloudToastEl = document.createElement('div');
+    _cloudToastEl.style.cssText = 'position:fixed;left:50%;bottom:26px;transform:translateX(-50%);' +
+      'background:rgba(32,28,22,.92);color:#FFE9B8;padding:10px 18px;border-radius:999px;' +
+      'font-size:13px;font-weight:700;z-index:99;opacity:0;transition:opacity .25s;pointer-events:none';
+    document.body.appendChild(_cloudToastEl);
+  }
+  _cloudToastEl.textContent = txt;
+  _cloudToastEl.style.opacity = '1';
+  clearTimeout(_cloudToastEl._t);
+  _cloudToastEl._t = setTimeout(()=>{ _cloudToastEl.style.opacity = '0'; }, 1800);
+}
+
+/* ---------- 入口绑定 ---------- */
+document.addEventListener('click', e=>{
+  const t = e.target.closest && e.target.closest('#accChip,#hudAcc');
+  if(t){ accOpen(); }
+});
+
+/* 启动：SDK 异步加载，失败也不影响游戏 */
+setTimeout(cloudBoot, 400);
+cloudPaint();
 
 load(); buildKeyboard(); buildHands(); bubbles(); petals(); magicDust(); magicCircleInit(); applyHeroArt(); renderHome(); show('home');
 
