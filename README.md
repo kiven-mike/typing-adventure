@@ -109,3 +109,10 @@ typing-game/
 ## License
 
 代码部分 MIT。图片素材版权归原权利人，仅限学习交流使用。
+
+## 🌐 在线游玩
+
+- 发布页（推荐）：https://typing-adventure-13087.app.workbuddy.host/?sharecode=SZTMKY52NO
+- 本仓库地址：https://github.com/kiven-mike/typing-adventure
+
+> 本网站持续优化中，玩法和特效会不断更新，欢迎常回来玩！
