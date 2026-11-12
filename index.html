@@ -1122,6 +1122,9 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
   font-size:18px;font-weight:900;letter-spacing:3px;color:#FF7A55;opacity:0;
   text-shadow:0 2px 10px #000,0 0 18px rgba(255,60,20,.95);pointer-events:none;white-space:nowrap}
 .bWarn.on{animation:bWarnFx .8s ease-out}
+.bWarn.hold{opacity:1;animation:bWarnHold .82s ease-in-out infinite}
+@keyframes bWarnHold{0%,100%{opacity:.62;transform:translate(-50%,-50%) scale(1)}
+  50%{opacity:1;transform:translate(-50%,-50%) scale(1.07)}}
 @keyframes bWarnFx{0%{opacity:0;transform:translate(-50%,-50%) scale(.7)}
   20%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}
   100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
@@ -1139,6 +1142,91 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 @keyframes bDmgFly{0%{opacity:0;transform:translateY(0) scale(.6)}
   18%{opacity:1;transform:translateY(-13px) scale(1.22)}
   100%{opacity:0;transform:translateY(-64px) scale(1)}}
+
+/* —— 怒气条：满了暴君就扑过来，打字能把怒气压下去 —— */
+.bRageRow{display:flex;align-items:center;gap:6px;margin-top:5px}
+.bRageRow span{font-size:9px;letter-spacing:1px;color:#FF9A7A;white-space:nowrap;
+  text-shadow:0 2px 4px #000}
+.bRageBar{position:relative;flex:1;height:6px;border-radius:999px;overflow:hidden;
+  background:rgba(24,8,5,.92);border:1px solid rgba(255,120,80,.38);box-shadow:inset 0 0 7px #000}
+.bRageBar b{display:block;height:100%;width:18%;border-radius:999px;
+  background:linear-gradient(90deg,#FFC46A,#FF7A1E 55%,#FF2A10);
+  box-shadow:0 0 9px rgba(255,90,30,.9);transition:width .12s linear}
+.bRageBar.hot b{animation:bRageHot .3s ease-in-out infinite}
+@keyframes bRageHot{0%,100%{filter:brightness(1)}50%{filter:brightness(1.85)}}
+
+/* —— 扑击：暴君冲到镜头前 + 三道爪痕 —— */
+.bBossWrap.lunge{animation:bLunge2 .62s cubic-bezier(.3,.05,.2,1)}
+@keyframes bLunge2{0%{transform:scale(1) translate(0,0)}
+  22%{transform:scale(1.1) translate(8px,-8px);filter:brightness(1.55) saturate(1.3)}
+  42%{transform:scale(1.52) translate(-68px,38px);filter:brightness(1.95) saturate(1.55)}
+  64%{transform:scale(1.32) translate(-28px,14px);filter:brightness(1.4)}
+  100%{transform:scale(1) translate(0,0);filter:brightness(1)}}
+.bClaw{position:absolute;inset:0;z-index:10;pointer-events:none;opacity:0;overflow:hidden}
+.bClaw.on{animation:bClawFade .66s ease-out}
+@keyframes bClawFade{0%{opacity:0}10%{opacity:1}72%{opacity:.9}100%{opacity:0}}
+.bClaw i{position:absolute;top:-30%;height:165%;width:26px;border-radius:50%;
+  background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,250,245,.98) 16%,
+    rgba(255,70,30,.98) 50%,rgba(255,20,10,.75) 78%,rgba(120,0,0,0) 100%);
+  filter:blur(1.2px) drop-shadow(0 0 26px rgba(255,36,10,1)) drop-shadow(0 0 60px rgba(255,60,20,.8));
+  transform:rotate(21deg) scaleY(0);transform-origin:50% 0}
+.bClaw.on i{animation:bClawSlash .46s cubic-bezier(.2,.9,.2,1) forwards}
+.bClaw i:nth-child(1){left:16%}
+.bClaw i:nth-child(2){left:34%;width:34px;animation-delay:.05s}
+.bClaw i:nth-child(3){left:53%;width:22px;animation-delay:.1s}
+@keyframes bClawSlash{0%{transform:rotate(21deg) scaleY(0);opacity:0}
+  14%{opacity:1}64%{transform:rotate(21deg) scaleY(1.08);opacity:1}
+  100%{transform:rotate(21deg) scaleY(1.08);opacity:0}}
+/* —— 蓄力能量球：跟着怒气长大，满了一路飞到镜头前 —— */
+.bOrb{position:absolute;left:60%;top:50%;width:56px;height:56px;margin:-28px 0 0 -28px;
+  border-radius:50%;z-index:10;pointer-events:none;opacity:0;
+  background:radial-gradient(circle,#FFFFFF 0%,#FFF0B0 18%,#FFC24A 34%,#FF4A12 58%,
+    rgba(150,0,0,.5) 74%,rgba(120,0,0,0) 82%);
+  filter:blur(.4px) drop-shadow(0 0 22px rgba(255,50,15,.95));
+  transition:opacity .18s ease}
+.bOrb.charging{animation:bOrbPulse .46s ease-in-out infinite}
+@keyframes bOrbPulse{0%,100%{filter:brightness(1.05) blur(.4px)}
+  50%{filter:brightness(1.9) blur(.6px)}}
+.bOrb.fly{transition:left .24s linear, top .24s cubic-bezier(.45,.05,.55,1), opacity .1s}
+/* 憋大招时 BOSS 抬爪蓄力 */
+.bBossWrap.chargeup{animation:bBossCharge .62s ease-in-out infinite}
+@keyframes bBossCharge{0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-9px) scale(1.045)}}
+.bBossWrap.chargeup #bBoss{filter:drop-shadow(0 10px 18px rgba(0,0,0,.8))
+  drop-shadow(0 0 26px rgba(255,70,20,.95)) brightness(1.12)}
+
+/* —— 空格闪避：白色冲击线 —— */
+.bDodge{position:absolute;inset:0;z-index:10;pointer-events:none;opacity:0;
+  background:radial-gradient(circle at 58% 62%,rgba(255,255,255,0) 32%,rgba(235,248,255,.45) 68%,rgba(255,255,255,.9) 100%)}
+.bDodge.on{animation:bDodgeFx .32s ease-out}
+@keyframes bDodgeFx{0%{opacity:0;transform:scale(1.07)}24%{opacity:1}100%{opacity:0;transform:scale(.97)}}
+#bStage.dodgecam{animation:bDodgeCam .34s ease-out}
+@keyframes bDodgeCam{0%{transform:scale(1)}42%{transform:scale(.958) translateY(7px)}100%{transform:scale(1)}}
+
+/* —— 命中瞬间的全屏血红闪光 —— */
+.bHurtFlash{position:absolute;inset:0;z-index:10;pointer-events:none;opacity:0;
+  background:radial-gradient(circle at 32% 52%,rgba(255,20,10,.55),rgba(150,0,0,.15) 45%,transparent 72%)}
+.bHurtFlash.on{animation:bHurtFlashFx .5s ease-out}
+@keyframes bHurtFlashFx{0%{opacity:0}12%{opacity:1}38%{opacity:.55}100%{opacity:0}}
+
+/* —— 硬直标记 —— */
+.bStunTag{position:absolute;right:12%;top:36%;z-index:11;opacity:0;pointer-events:none;
+  font-size:12px;font-weight:900;letter-spacing:2px;color:#0b1622;
+  background:linear-gradient(180deg,#FFE45C,#FFAE1C);padding:3px 11px;border-radius:999px;
+  box-shadow:0 0 15px rgba(255,190,60,.95);transform:rotate(-8deg);white-space:nowrap}
+.bStunTag.on{animation:bStunPop .95s ease-out}
+@keyframes bStunPop{0%{opacity:0;transform:rotate(-8deg) scale(.5)}
+  18%{opacity:1;transform:rotate(-8deg) scale(1.12)}
+  78%{opacity:1;transform:rotate(-8deg) scale(1)}
+  100%{opacity:0;transform:rotate(-8deg) scale(1)}}
+.bBossWrap.stun #bBoss{filter:brightness(1.55) saturate(.3) drop-shadow(0 0 20px rgba(255,220,120,.95))}
+.bPlayerHud.hurt{animation:bHudHurt .52s ease-out}
+@keyframes bHudHurt{0%,100%{transform:translateX(0);filter:none}
+  18%{transform:translateX(-7px);filter:brightness(2.3) saturate(2)}
+  44%{transform:translateX(6px)}70%{transform:translateX(-3px)}}
+#bStage.critical::after{content:'';position:absolute;inset:0;z-index:9;pointer-events:none;
+  box-shadow:inset 0 0 95px rgba(255,20,10,.6);animation:bCritPulse 1.4s ease-in-out infinite}
+@keyframes bCritPulse{0%,100%{opacity:.28}50%{opacity:.95}}
 
 /* ===== 第 1 关 · 生化来袭（真实游戏图 + 枪 + 掉血）===== */
 .prompt.zMode{background:#0d1218;padding:0;height:352px;box-shadow:0 10px 30px rgba(10,20,30,.32);border:2px solid #2a3644}
@@ -2927,7 +3015,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 <body>
 <div id="verTag" style="position:fixed;right:8px;bottom:6px;z-index:200;pointer-events:none;
   font-size:11px;font-weight:700;color:#A896B4;background:rgba(255,255,255,.72);
-  padding:2px 8px;border-radius:8px">v11-12 14:40</div>
+  padding:2px 8px;border-radius:8px">v11-12 15:20</div>
 <div class="aurora"><i></i><i></i><i></i></div>
 <!-- 叶罗丽风：飘落的花瓣 + 闪光魔法尘 -->
 <div class="petals" id="petals"></div>
@@ -3091,7 +3179,8 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
         <div class="bBossHud">
           <div class="bBossRow"><span>☣ 生化暴君</span><span class="bBossPct" id="bHpNum">100%</span></div>
           <div class="bHpBar"><i id="bHpFill"></i></div>
-          <div class="bPhaseTip" id="bPhaseTip">敲对拼音就开枪 · 打空血条击倒它</div>
+          <div class="bRageRow"><span>暴君怒气</span><i class="bRageBar"><b id="bRageFill"></b></i></div>
+          <div class="bPhaseTip" id="bPhaseTip">敲对拼音开枪 · 它会蓄力扑击：打完词＝打断 或 空格＝闪避</div>
         </div>
         <div class="bPlayerHud" id="bPlayerHud">
           <div class="bPvName">🛡 生命 <b id="bPvNum">100</b></div>
@@ -3108,6 +3197,11 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 
         <div class="bHudScrim"></div>
         <div class="bVignette" id="bVignette"></div>
+        <div class="bClaw" id="bClaw"><i></i><i></i><i></i></div>
+        <div class="bOrb" id="bOrb"></div>
+        <div class="bDodge" id="bDodge"></div>
+        <div class="bHurtFlash" id="bHurtFlash"></div>
+        <div class="bStunTag" id="bStunTag">硬 直</div>
         <div class="bWarn" id="bWarn">⚠ 暴君蓄力！</div>
         <div class="bBanner" id="bBanner">狂 暴</div>
       </div>
@@ -3331,8 +3425,8 @@ const LEVELS = [
     keyset:'fjdk', how:['🎯','按对坦克上的字母 → 开炮击毁它'], keys:['f','j','d','k'], waves:3, perWave:4, lives:3 },
   { id:3, mode:'swim', em:'🐟', name:'第 3 关 · 字母游泳', desc:'每按对字母，叶罗丽就往前游一格。一路游到沙滩终点就赢啦！', stars:2,
     keyset:'fjdk', how:['🏁','按对字母，叶罗丽就往前游一格'], keys:['f','j','d','k'], seq:14, lives:3, misses:3 },
-  { id:4, mode:'cfboss', em:'☣️', name:'第 4 关 · 生化暴君', desc:'挑战模式！打对拼音就开枪，把 BOSS 血条打空。它也会反击，别被它打光血。', stars:2,
-    how:['☣️','打对拼音开枪扣 BOSS 血；BOSS 会反击扣你的血'], skill:'汉字 → 拼音', pool:'WORDS_EASY' },
+  { id:4, mode:'cfboss', em:'☣️', name:'第 4 关 · 生化暴君', desc:'挑战模式！打对拼音开枪。它会抬爪蓄力扑你：打完当前词＝打断它，或按空格闪避！', stars:2,
+    how:['☣️','打对拼音开枪；它蓄力扑击时：打完词＝打断，空格＝闪避'], skill:'汉字 → 拼音', pool:'WORDS_EASY' },
   { id:5, mode:'kart', em:'🏎️', name:'第 5 关 · 卡丁车冲刺', desc:'打字加速赛车！每完成一句就冲一段，别让对手先到终点。', stars:3,
     how:['🏎️','一句一句打完，你的赛车就往前冲；对手也在跑'], skill:'整句拼音', pool:'SENTS_EASY' },
   { id:6, mode:'balloon', em:'🎈', name:'第 6 关 · 字母气球（上排）', desc:'上排 q w e r t 五个键！气球带着字母飞上来，按对字母就戳爆它。', stars:2,
@@ -6296,8 +6390,8 @@ function kartLose(){
    ========================================================== */
 const CFB = {
   on:false, hp:1000, hpMax:1000, perLetter:18, wordCrit:18, pv:100,
-  raf:0, last:0, t:0, atkEvery:5200, atkDmg:7, enraged:false,
-  shots:0, hits:0, busy:false, aim:{x:0,y:0}, emberAt:0, frame:0
+  raf:0, last:0, rage:18, stun:0, pressing:0, enraged:false, warned:false, flying:false, dodged:false, strikeT:0,
+  shots:0, hits:0, words:0, interrupts:0, aim:{x:0,y:0}, emberAt:0, frame:0
 };
 
 function cfbEl(id){ return document.getElementById(id); }
@@ -6308,14 +6402,18 @@ function startCfboss(lv){
   const pr = document.querySelector('.prompt');
   if(pr) pr.classList.add('bMode');
   const st = cfbEl('bStage');
-  if(st){ st.style.display='block'; st.classList.remove('enraged','shake'); }
+  if(st){ st.style.display='block'; st.classList.remove('enraged','shake','critical'); }
   const bw = cfbEl('bBossWrap');
-  if(bw) bw.className = 'bBossWrap';
+  if(bw){ bw.className = 'bBossWrap'; bw.style.right='10%'; }
   const au = cfbEl('bAura'); if(au) au.classList.remove('charging');
   const wd = cfbEl('bWound'); if(wd) wd.innerHTML='';
   const bn = cfbEl('bBanner'); if(bn) bn.classList.remove('on');
-  const wm = cfbEl('bWarn'); if(wm) wm.classList.remove('on');
+  const wm = cfbEl('bWarn'); if(wm) wm.classList.remove('on','hold');
   const em = cfbEl('bEmbers'); if(em) em.innerHTML='';
+  const cw = cfbEl('bClaw'); if(cw) cw.classList.remove('on');
+  const fl = cfbEl('bHurtFlash'); if(fl) fl.classList.remove('on');
+  const tg = cfbEl('bStunTag'); if(tg) tg.classList.remove('on');
+  const pw = cfbEl('bPlayerHud'); if(pw) pw.classList.remove('hurt','low');
 
   /* 每发伤害 = 全关字母总数分摊（85%），剩下 15% 作为"整词暴击"补刀，
      这样血条正好在最后一个词打完时归零，不会提前结算。 */
@@ -6328,17 +6426,22 @@ function startCfboss(lv){
   CFB.hp = CFB.hpMax;
   CFB.pv = 100;
   CFB.on = true; CFB.enraged = false;
-  CFB.atkEvery = 5200; CFB.atkDmg = 7;
-  CFB.t = 0; CFB.last = performance.now();
-  CFB.shots = 0; CFB.hits = 0; CFB.busy = false; CFB.emberAt = 0; CFB.frame = 0;
+  CFB.rage = 18; CFB.stun = 0; CFB.pressing = 0; CFB.warned = false; CFB.flying = false; CFB.dodged = false;
+  const orb = cfbEl('bOrb');
+  if(orb){ orb.className='bOrb'; orb.style.opacity='0'; }
+  CFB.last = performance.now();
+  CFB.shots = 0; CFB.hits = 0; CFB.words = 0; CFB.interrupts = 0;
+  CFB.emberAt = 0; CFB.frame = 0;
   G.perfect = true;
   cfbRefresh();
+  cfbRagePaint();
+  cfbLabel('敲对拼音开枪 · 怒气条一满它就扑过来');
   pyLoadWord();
   if(CFB.raf) cancelAnimationFrame(CFB.raf);
   CFB.raf = requestAnimationFrame(cfbLoop);
   requestAnimationFrame(()=>{ cfbAim(); });
   const h = cfbEl('hint');
-  if(h) h.innerHTML = '敲对拼音字母就开枪，把血条打空！';
+  if(h) h.innerHTML = '敲对拼音开枪！怒气红了：<b>打完这个词＝打断</b>，或按 <b>空格</b> 闪避';
 }
 
 /* 准星对准 BOSS 胸口 */
@@ -6353,6 +6456,35 @@ function cfbAim(){
   cr.style.top  = y+'px';
 }
 
+function cfbLabel(text){
+  const tip=cfbEl('bPhaseTip'); if(tip) tip.textContent=text;
+}
+
+/* 怒气条：涨满就扑击；敲对字母能把怒气打下去 */
+function cfbRagePaint(){
+  const f=cfbEl('bRageFill');
+  if(f) f.style.width = Math.max(0, Math.min(100, CFB.rage)).toFixed(1)+'%';
+  const bar = f && f.parentNode;
+  if(bar) bar.classList.toggle('hot', CFB.rage>=65);
+}
+
+/* 能量球跟着 BOSS 的爪子走，随怒气变大；怒气过 65 开始暴闪（＝要放大招了） */
+function cfbOrb(){
+  const orb=cfbEl('bOrb'), bw=cfbEl('bBossWrap'), st=cfbEl('bStage');
+  if(!orb || !bw || !st) return;
+  if(CFB.flying) return;
+  const br=bw.getBoundingClientRect(), sr=st.getBoundingClientRect();
+  const x = br.left-sr.left + br.width*0.20;
+  const y = br.top-sr.top  + br.height*0.60;
+  orb.style.left = x+'px';
+  orb.style.top  = y+'px';
+  const r = CFB.rage;
+  orb.style.opacity = (r>=28 ? Math.min(1,(r-28)/30) : 0).toFixed(2);
+  orb.style.transform = 'scale(' + (0.34 + Math.min(1, r/100)*0.9).toFixed(2) + ')';
+  orb.classList.toggle('charging', r>=65 && CFB.stun<=0);
+  bw.classList.toggle('chargeup', r>=65 && CFB.stun<=0);
+}
+
 function cfbRefresh(){
   const pct = Math.max(0, CFB.hp) / CFB.hpMax * 100;
   const hf=cfbEl('bHpFill'), hn=cfbEl('bHpNum');
@@ -6362,6 +6494,9 @@ function cfbRefresh(){
   if(pf) pf.style.width = Math.max(0,CFB.pv)+'%';
   if(pn) pn.textContent = String(Math.round(Math.max(0,CFB.pv)));
   if(pw) pw.classList.toggle('low', CFB.pv<=35);
+  const st=cfbEl('bStage');
+  if(st) st.classList.toggle('critical', CFB.pv>0 && CFB.pv<=30);
+  cfbRagePaint();
 }
 
 function cfbLoop(now){
@@ -6369,13 +6504,35 @@ function cfbLoop(now){
   CFB.raf = requestAnimationFrame(cfbLoop);
   const dt = Math.min(120, now-(CFB.last||now));
   CFB.last = now;
-  CFB.t += dt;
-  if(CFB.t > CFB.atkEvery){ CFB.t = 0; cfbBossAttack(); }
+  if(CFB.stun > 0){
+    /* 被打断/压制：硬直中，怒气不涨 */
+    CFB.stun -= dt;
+    if(CFB.stun <= 0){
+      const bw=cfbEl('bBossWrap'); if(bw) bw.classList.remove('stun');
+      cfbLabel('它缓过来了，继续打！');
+    }
+  } else {
+    /* 怒气 < 65 涨得快；一过 65 就是"憋大招"，涨得慢，给玩家时间打完这个词打断它 */
+    const charging = CFB.rage >= 65;
+    const rate = CFB.enraged ? 32 : 26;
+    CFB.rage += rate * dt/1000;
+    if(CFB.rage >= 100){ CFB.rage = 100; cfbRagePaint(); cfbStrike(); }
+    else if(charging && !CFB.warned){
+      CFB.warned = true;
+      const wm=cfbEl('bWarn');
+      if(wm){ wm.textContent='⚠ 憋大招！打完这个词＝打断它';
+              wm.classList.remove('on'); wm.classList.add('hold'); }
+      const au=cfbEl('bAura'); if(au){ au.classList.remove('charging'); void au.offsetWidth; au.classList.add('charging'); }
+      try{ sfx.charge(); }catch(e){}
+    }
+    if(CFB.rage < 60){ CFB.warned = false; CFB.dodged = false; }
+  }
   if(now - CFB.emberAt > 300){ CFB.emberAt = now; cfbEmber(); }
   /* 血量过半 → 狂暴 */
   if(!CFB.enraged && CFB.hp <= CFB.hpMax*0.5) cfbEnrage();
   /* 呼吸动画会让包围盒轻微变化，隔几帧重对准星 */
   if((CFB.frame = (CFB.frame+1) % 8) === 0) cfbAim();
+  if(CFB.frame % 2 === 0) cfbOrb();
 }
 
 /* 飘扬的火星（氛围） */
@@ -6488,8 +6645,13 @@ function cfbLetterHit(){
   if(!CFB.on) return;
   CFB.shots++;
   CFB.hits++;
-  const dmg = CFB.perLetter;
+  /* 硬直期伤害加成：压制成功就该猛打 */
+  const dmg = CFB.perLetter * (CFB.stun>0 ? 1.35 : 1);
   CFB.hp = Math.max(1, CFB.hp - dmg);   /* 留 1 点，由整词暴击补刀 */
+  /* 平时子弹能压怒气；一旦它开始憋大招（怒气≥65）就不吃了 —— 只能打完这个词打断 */
+  if(CFB.stun <= 0 && CFB.rage < 65){
+    CFB.rage = Math.max(0, CFB.rage - 4.4);
+  }
   cfbRefresh();
   cfbShotFx(true);
   /* BOSS 轻微后仰 */
@@ -6499,7 +6661,47 @@ function cfbLetterHit(){
   try{ bumpCombo(true); }catch(e){}
 }
 
-/* ============ 整词打完：暴击补刀 ============ */
+/* ============ 打断：它憋大招时把当前词打完 ============ */
+function cfbInterrupt(){
+  if(!CFB.on) return;
+  CFB.interrupts++;
+  CFB.stun = 1300;
+  CFB.rage = 12;
+  CFB.warned = false;
+  CFB.dodged = false;
+  CFB.hp = Math.max(0, CFB.hp - CFB.perLetter*5);
+  const bw=cfbEl('bBossWrap');
+  if(bw){
+    bw.classList.add('stun');
+    bw.classList.remove('chargeup');
+    /* 被打退半步 */
+    CFB.pressing = Math.max(0, CFB.pressing-1);
+    bw.style.right = (10 - CFB.pressing*1.6)+'%';
+  }
+  CFB.flying = false;
+  const orbI=cfbEl('bOrb');
+  if(orbI){ orbI.classList.remove('charging','fly'); orbI.style.opacity='0'; }
+  const tg=cfbEl('bStunTag');
+  if(tg){ tg.classList.remove('on'); void tg.offsetWidth; tg.classList.add('on'); }
+  const bn=cfbEl('bBanner');
+  if(bn){ bn.textContent='打 断'; bn.classList.remove('on'); void bn.offsetWidth; bn.classList.add('on'); }
+  cfbLabel('打断成功！它硬直了，趁现在猛打（伤害 ×1.35）');
+  const wm=cfbEl('bWarn');
+  if(wm){ wm.textContent='✔ 打断成功'; wm.classList.remove('hold','on'); void wm.offsetWidth; wm.classList.add('on'); }
+  try{ sfx.metalBoom(); }catch(e){}
+  try{
+    const st=cfbEl('bStage'), sr=st.getBoundingClientRect();
+    FX.ring(sr.left+sr.width*0.66, sr.top+sr.height*0.42,
+      {r0:16,r1:190,life:.6,color:'rgba(255,230,140,.9)',width:6});
+    FX.burst(sr.left+sr.width*0.66, sr.top+sr.height*0.42, 22,
+      {speed:320,speed2:70,arc:Math.PI*2,g:340,drag:.92,life:.7,size:4,
+       colors:['#FFF6C0','#FFD24A','#FF9A2B']});
+  }catch(e){}
+  cfbRefresh();
+  if(CFB.hp<=0) cfbWin();
+}
+
+/* ============ 整词打完：暴击补刀（憋大招时＝打断） ============ */
 function bossTakeHit(){
   if(!CFB.on) return;
   CFB.hp = Math.max(0, CFB.hp - CFB.wordCrit);
@@ -6518,57 +6720,145 @@ function bossTakeHit(){
     if(bn){ bn.textContent='暴 击'; bn.classList.remove('on'); void bn.offsetWidth; bn.classList.add('on'); }
   }
   try{ sfx.metalBoom(); }catch(e){}
-  if(CFB.hp<=0) cfbWin();
+  if(CFB.hp<=0){ cfbWin(); return; }
+  /* 它正在憋大招 → 这个词打完就是打断 */
+  if(CFB.rage >= 65 && CFB.stun<=0) setTimeout(()=>{ if(CFB.on) cfbInterrupt(); }, 70);
 }
 
-/* ============ BOSS 蓄力 → 扑击 ============ */
-function cfbBossAttack(){
-  if(!CFB.on || CFB.busy) return;
-  CFB.busy = true;
-  const au=cfbEl('bAura'), wm=cfbEl('bWarn');
+/* ============ 暴君扑击：能量球飞到镜头前 → 三道爪痕 → 真扣血 ============ */
+function cfbStrike(){
+  if(!CFB.on || CFB.stun>0) return;
+  const dmg = CFB.enraged ? 14 : 11;
+  CFB.rage = 18;
+  CFB.warned = false;
+  CFB.dodged = false;
+  cfbRagePaint();
+  CFB.pressing = Math.min(4, CFB.pressing+1);
+  const bw=cfbEl('bBossWrap'), stg=cfbEl('bStage'), vg=cfbEl('bVignette'), cw=cfbEl('bClaw');
+  const au=cfbEl('bAura'), wm=cfbEl('bWarn'), orb=cfbEl('bOrb');
+  cfbLabel('它扑过来了！快打它压住怒气');
+  if(bw) bw.classList.remove('chargeup');
   if(au){ au.classList.remove('charging'); void au.offsetWidth; au.classList.add('charging'); }
-  if(wm){ wm.textContent = CFB.enraged ? '⚠ 狂暴扑击！' : '⚠ 暴君蓄力！';
-          wm.classList.remove('on'); void wm.offsetWidth; wm.classList.add('on'); }
-  try{ sfx.bad(); }catch(e){}
-  setTimeout(()=>{
-    if(!CFB.on) return;
-    const bw=cfbEl('bBossWrap'), st=cfbEl('bStage'), vg=cfbEl('bVignette');
-    if(bw){ bw.classList.remove('lunge'); void bw.offsetWidth; bw.classList.add('lunge'); }
-    if(st){ st.classList.remove('shake'); void st.offsetWidth; st.classList.add('shake');
-            setTimeout(()=>st.classList.remove('shake'), 440); }
-    if(vg){ vg.classList.remove('hurt'); void vg.offsetWidth; vg.classList.add('hurt'); }
-    const cw=lEl('lClaw');
+  if(wm){ wm.textContent = CFB.enraged ? '⚠ 狂暴扑击！' : '⚠ 暴君扑击！';
+          wm.classList.remove('hold','on'); void wm.offsetWidth; wm.classList.add('on'); }
+  try{ sfx.whizz(); }catch(e){}
+  /* 能量球脱手：从爪子飞向镜头 */
+  if(orb && stg){
+    const sr = stg.getBoundingClientRect();
+    CFB.flying = true;
+    orb.classList.remove('charging');
+    orb.classList.add('fly');
+    orb.style.opacity = '1';
+    orb.style.transform = 'scale(1.5)';
+    orb.style.left = (sr.width*0.33)+'px';
+    orb.style.top  = (sr.height*0.50)+'px';
+  }
+  if(bw){
+    bw.classList.remove('lunge'); void bw.offsetWidth; bw.classList.add('lunge');
+    /* 每扑一次就逼近一点，压迫感累积 */
+    bw.style.right = (10 - CFB.pressing*1.6)+'%';
+    setTimeout(()=>{ if(bw) bw.classList.remove('lunge'); }, 640);
+  }
+
+  /* 能量球砸到脸上的那一瞬间才结算（闪避会把窗口关掉） */
+  CFB.strikeT = setTimeout(()=>{
+    if(!CFB.on || CFB.dodged) return;
+    const st=cfbEl('bStage');
+    CFB.flying = false;
+    if(orb){ orb.style.opacity='0'; orb.classList.remove('fly'); }
+    /* 爪痕 + 全屏血红 + 震屏 */
     if(cw){ cw.classList.remove('on'); void cw.offsetWidth; cw.classList.add('on'); }
-    CFB.pv = Math.max(0, CFB.pv - CFB.atkDmg);
+    if(vg){ vg.classList.remove('hurt'); void vg.offsetWidth; vg.classList.add('hurt'); }
+    const fl=cfbEl('bHurtFlash');
+    if(fl){ fl.classList.remove('on'); void fl.offsetWidth; fl.classList.add('on'); }
+    if(st){
+      st.classList.remove('shake'); void st.offsetWidth; st.classList.add('shake');
+      setTimeout(()=>st.classList.remove('shake'), 560);
+    }
+    CFB.pv = Math.max(0, CFB.pv - dmg);
     cfbRefresh();
-    /* 玩家受伤飘字 */
+    const pw=cfbEl('bPlayerHud');
+    if(pw){ pw.classList.remove('hurt'); void pw.offsetWidth; pw.classList.add('hurt');
+            setTimeout(()=>pw.classList.remove('hurt'), 560); }
+    /* 屏幕左侧大红字掉血 */
     try{
-      const st2=cfbEl('bStage'), sr=st2.getBoundingClientRect();
-      const d=document.createElement('div');
-      d.className='bDmg'; d.style.color='#FF5C5C'; d.style.fontSize='18px';
-      d.textContent='-'+CFB.atkDmg+' HP';
-      d.style.left='16px'; d.style.top='58px';
-      st2.appendChild(d); setTimeout(()=>d.remove(),820);
-      FX.burst(sr.left+70, sr.top+sr.height*0.5, 14,
-        {speed:220,speed2:50,arc:Math.PI*2,g:520,drag:.92,life:.5,size:3,
-         colors:['#FF4B4B','#FF9A9A','#8B0000']});
+      if(st){
+        const d=document.createElement('div');
+        d.className='bDmg hurtDmg';
+        d.textContent='-'+dmg+' HP';
+        d.style.left='20%'; d.style.top='42%';
+        d.style.color='#FFFFFF'; d.style.fontSize='44px';
+        d.style.textShadow='0 0 5px #000, 3px 3px 0 #8B0000, -3px -3px 0 #8B0000, 3px -3px 0 #8B0000, -3px 3px 0 #8B0000, 0 0 30px rgba(255,40,10,.95)';
+        d.style.zIndex='13';
+        st.appendChild(d); setTimeout(()=>d.remove(), 900);
+        const sr=st.getBoundingClientRect();
+        FX.burst(sr.left+80, sr.top+sr.height*0.55, 20,
+          {speed:300,speed2:60,arc:Math.PI*2,g:640,drag:.9,life:.55,size:4,
+           colors:['#FF4B4B','#FF9A9A','#8B0000','#FFE0E0']});
+      }
     }catch(e){}
-    setTimeout(()=>{ if(bw) bw.classList.remove('lunge'); CFB.busy=false; }, 540);
+    try{ sfx.bad(); }catch(e){}
+    try{ bumpCombo(false); }catch(e){}
     if(CFB.pv<=0) cfbLose();
-  }, 720);
+  }, 250);
+}
+
+/* ============ 空格闪避：它憋大招时后跳，扑空 ============ */
+function cfbDodge(){
+  if(!CFB.on || CFB.stun>0) return;
+  /* 球还在手上（rage≥65）或刚脱手（flying）：都能闪；球砸脸就晚了 */
+  if(!(CFB.rage >= 65 || CFB.flying) || CFB.dodged) return;
+  /* 能量球已经脱手：最后 0.1 秒闪避窗口，过了就挨打 */
+  CFB.dodged = true;
+  if(CFB.strikeT){ clearTimeout(CFB.strikeT); CFB.strikeT = 0; }
+  CFB.rage = 26;
+  CFB.stun = 800;
+  CFB.flying = false;
+  CFB.pressing = Math.max(0, CFB.pressing-1);
+  const bw=cfbEl('bBossWrap'), st=cfbEl('bStage'), dg=cfbEl('bDodge'), wm=cfbEl('bWarn');
+  const orb=cfbEl('bOrb');
+  if(orb){ orb.classList.remove('charging','fly'); orb.style.opacity='0'; }
+  if(bw){
+    bw.classList.remove('chargeup');
+    bw.style.right = (10 - CFB.pressing*1.6)+'%';
+    bw.classList.remove('lunge'); void bw.offsetWidth; bw.classList.add('lunge');
+    bw.classList.add('stun');
+    setTimeout(()=>{ if(bw) bw.classList.remove('lunge'); }, 640);
+  }
+  if(st){
+    st.classList.remove('dodgecam'); void st.offsetWidth; st.classList.add('dodgecam');
+    setTimeout(()=>st.classList.remove('dodgecam'), 400);
+  }
+  if(dg){ dg.classList.remove('on'); void dg.offsetWidth; dg.classList.add('on'); }
+  if(wm){ wm.textContent='✔ 闪开了'; wm.classList.remove('hold','on'); void wm.offsetWidth; wm.classList.add('on'); }
+  if(CFB.strikeT){ clearTimeout(CFB.strikeT); CFB.strikeT = 0; }
+  const tg=cfbEl('bStunTag');
+  if(tg){ tg.classList.remove('on'); void tg.offsetWidth; tg.classList.add('on'); }
+  const bn=cfbEl('bBanner');
+  if(bn){ bn.textContent='闪 避'; bn.classList.remove('on'); void bn.offsetWidth; bn.classList.add('on'); }
+  cfbLabel('漂亮！它扑空了，硬直 0.8 秒，快打它！');
+  try{ sfx.whizz(); }catch(e){}
+  try{
+    const sr=st.getBoundingClientRect();
+    FX.ring(sr.left+sr.width*0.5, sr.top+sr.height*0.55,
+      {r0:26,r1:210,life:.44,color:'rgba(220,240,255,.85)',width:5});
+    FX.burst(sr.left+sr.width*0.5, sr.top+sr.height*0.55, 16,
+      {speed:260,speed2:60,arc:Math.PI*2,g:240,drag:.9,life:.5,size:3,
+       colors:['#FFFFFF','#DCEFFF','#9BC8FF']});
+  }catch(e){}
 }
 
 /* ============ 狂暴 ============ */
 function cfbEnrage(){
   CFB.enraged = true;
-  CFB.atkEvery = 3600;
-  CFB.atkDmg = 9;
-  const st=cfbEl('bStage'), bw=cfbEl('bBossWrap'), tip=cfbEl('bPhaseTip');
+  const st=cfbEl('bStage'), bw=cfbEl('bBossWrap');
   if(st) st.classList.add('enraged');
   if(bw) bw.classList.add('enrage');
-  if(tip) tip.textContent = '⚠ 狂暴状态：攻击更快更狠，快打！';
+  cfbLabel('⚠ 狂暴：怒气涨得更快，扑得更狠！压住它！');
   const bn=cfbEl('bBanner');
   if(bn){ bn.textContent='狂 暴'; bn.classList.remove('on'); void bn.offsetWidth; bn.classList.add('on'); }
+  const wm=cfbEl('bWarn');
+  if(wm){ wm.textContent='☣ 它狂暴了！'; wm.classList.remove('hold','on'); void wm.offsetWidth; wm.classList.add('on'); }
   try{ sfx.boom(); }catch(e){}
 }
 
@@ -6576,10 +6866,13 @@ function cfbEnrage(){
 function cfbWin(){
   if(!CFB.on) return;
   CFB.on = false;
+  CFB.flying = false;
   PY.alive = false;          /* 冻住输入，防止 pyLoadWord 抢在动画前二次结算 */
   if(CFB.raf){ cancelAnimationFrame(CFB.raf); CFB.raf=0; }
   const bw=cfbEl('bBossWrap');
-  if(bw){ bw.classList.remove('hit','enrage'); bw.classList.add('dead'); }
+  if(bw){ bw.classList.remove('hit','enrage','chargeup','stun'); bw.classList.add('dead'); }
+  const orbW=cfbEl('bOrb'); if(orbW){ orbW.classList.remove('charging','fly'); orbW.style.opacity='0'; }
+  const wmW=cfbEl('bWarn'); if(wmW) wmW.classList.remove('hold','on');
   const bn=cfbEl('bBanner');
   if(bn){ bn.textContent='击 倒'; bn.classList.remove('on'); void bn.offsetWidth; bn.classList.add('on'); }
   const cr=cfbEl('bCross'); if(cr) cr.style.opacity='0';
@@ -6598,8 +6891,12 @@ function cfbWin(){
 function cfbLose(){
   if(!CFB.on) return;
   CFB.on = false;
+  CFB.flying = false;
   PY.alive = false;
   if(CFB.raf){ cancelAnimationFrame(CFB.raf); CFB.raf=0; }
+  const orbL=cfbEl('bOrb'); if(orbL){ orbL.classList.remove('charging','fly'); orbL.style.opacity='0'; }
+  const wmL=cfbEl('bWarn'); if(wmL) wmL.classList.remove('hold','on');
+  const bwL=cfbEl('bBossWrap'); if(bwL) bwL.classList.remove('chargeup');
   G.perfect = false;
   try{ sfx.bad(); }catch(e){}
   setTimeout(()=>{
@@ -6607,9 +6904,10 @@ function cfbLose(){
       <div class="em">☣️</div>
       <h2>你被暴君打倒了</h2>
       <p style="color:var(--ink-soft);font-size:15px;line-height:1.8">
-        它每隔几秒就会蓄力扑过来。<br><b>打得更快</b>，就能在它打倒你之前干掉它。
+        它不是站着挨打的：<b>怒气涨满就扑过来抓你</b>。<br>
+        看它<b>抬爪蓄力球</b>时：打完当前词＝打断，或按 <b>空格</b> 后跳闪避。
       </p>
-      <div class="row"><div>已打掉暴君 ${Math.round(100-CFB.hp/CFB.hpMax*100)}% 的血</div></div>
+      <div class="row"><div>已打掉暴君 ${Math.round(100-CFB.hp/CFB.hpMax*100)}% 的血　·　成功压制 ${CFB.interrupts||0} 次</div></div>
       <div class="btns">
         <button class="btn" onclick="closeModal();startLevel(4)">再打一次 🔫</button>
         <button class="btn ghost" onclick="backHome()">回首页</button>
@@ -6803,6 +7101,12 @@ function pyPress(raw){
     G.perfect = false;
     sfx.bad();
     bumpCombo(false, want);
+    /* 第 4 关：打偏一发，暴君就多攒一点怒气 */
+    if(G.lvl && G.lvl.mode === 'cfboss' && CFB.on && CFB.stun<=0){
+      CFB.rage = Math.min(99, CFB.rage + 6);
+      cfbRagePaint();
+      cfbLabel('打偏了！它怒气又涨了一截');
+    }
     pyStatus();
     return;
   }
@@ -10037,6 +10341,8 @@ document.addEventListener('keydown', e=>{
   /* 拼音关（词语/句子）走自己的输入逻辑 */
   if(G.lvl && (G.lvl.mode==='pyword' || G.lvl.mode==='pysent' || G.lvl.mode==='cfboss' || G.lvl.mode==='kart')){
     if(e.key==='Backspace'){ e.preventDefault(); return; }
+    /* 生化暴君：空格＝后跳闪避（只在它憋大招时有效） */
+    if(G.lvl.mode==='cfboss' && e.key===' '){ e.preventDefault(); cfbDodge(); return; }
     if(e.key.length!==1) return;
     e.preventDefault();
     pyPress(e.key);
